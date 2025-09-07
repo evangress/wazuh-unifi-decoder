@@ -56,9 +56,21 @@
 </decoder>
 
 <decoder name="ubiquiti">
+    <parent>ubiquiti</parent>
+    <regex type="pcre2">UNIFIsubCategory=([^\s].*?)\s*(?=[A-Za-z0-9_.:-]+=|$)</regex>
+    <order>unifi_sub-category</order>
+</decoder>
+
+<decoder name="ubiquiti">
 	<parent>ubiquiti</parent>
 	<regex type="pcre2">cnt=([^\s].*?)\s*(?=[A-Za-z0-9_.:-]+=|$)</regex>
 	<order>cnt</order>
+</decoder>
+
+<decoder name="ubiquiti">
+    <parent>ubiquiti</parent>
+    <regex type="pcre2">UNIFIrisk=([^\s].*?)\s*(?=[A-Za-z0-9_.:-]+=|$)</regex>
+    <order>unifi_risk</order>
 </decoder>
 
 <decoder name="ubiquiti">
@@ -71,6 +83,12 @@
 	<parent>ubiquiti</parent>
 	<regex type="pcre2">msg=([^\s].*?)\s*(?=[A-Za-z0-9_.:-]+=|$)</regex>
 	<order>msg</order>
+</decoder>
+
+<decoder name="ubiquiti">
+    <parent>ubiquiti</parent>
+    <regex type="pcre2">msg=([^\s].*?)\s*(?=[A-Za-z0-9_.:-]+=|$)</regex>
+    <order>action</order>
 </decoder>
 
 <decoder name="ubiquiti">
@@ -102,6 +120,12 @@
 	<parent>ubiquiti</parent>
 	<regex type="pcre2">UNIFI5GHzChannel=([^\s].*?)\s*(?=[A-Za-z0-9_.:-]+=|$)</regex>
 	<order>unifi_5ghz_channel</order>
+</decoder>
+
+<decoder name="ubiquiti">
+    <parent>ubiquiti</parent>
+    <regex type="pcre2">UNIFIsite=([^\s].*?)\s*(?=[A-Za-z0-9_.:-]+=|$)</regex>
+    <order>unifi_site</order>
 </decoder>
 
 <decoder name="ubiquiti">
