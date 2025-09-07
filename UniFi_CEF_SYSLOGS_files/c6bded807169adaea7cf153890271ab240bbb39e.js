@@ -1,1 +1,0 @@
-$.when($.ready).then((()=>{const e=document.querySelector(".footer__copyrights-year");e&&(e.textContent=(new Date).getFullYear())}));
