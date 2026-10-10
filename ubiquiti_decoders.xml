@@ -43,6 +43,12 @@
 	<prematch type="pcre2">(?:^|CEF:)\d+\|Ubiquiti\|</prematch>
 </decoder>
 
+<!-- Second parent for logs with no program name at all (e.g. a bare "CEF:0|..." line):
+     decoders that declare <program_name> are never tried for those. -->
+<decoder name="ubiquiti">
+	<prematch type="pcre2">^CEF:\d+\|Ubiquiti\|</prematch>
+</decoder>
+
         <!-- CEF header fields -->
 <!-- Standard Wazuh Fields: vendor, product -->
 <decoder name="ubiquiti">
@@ -104,6 +110,12 @@
 	<parent>ubiquiti</parent>
 	<regex type="pcre2">\bsrc=(\S.*?)(?=\s+[A-Za-z][A-Za-z0-9_]*=|\s*$)</regex>
 	<order>src</order>
+</decoder>
+
+<decoder name="ubiquiti">
+	<parent>ubiquiti</parent>
+	<regex type="pcre2">\bsrc=(\S.*?)(?=\s+[A-Za-z][A-Za-z0-9_]*=|\s*$)</regex>
+	<order>srcip</order>
 </decoder>
 
 <decoder name="ubiquiti">
@@ -487,6 +499,12 @@
 
 <decoder name="ubiquiti">
 	<parent>ubiquiti</parent>
+	<regex type="pcre2">\bUNIFIdeviceVersion=(\S.*?)(?=\s+[A-Za-z][A-Za-z0-9_]*=|\s*$)</regex>
+	<order>unifi_device_version</order>
+</decoder>
+
+<decoder name="ubiquiti">
+	<parent>ubiquiti</parent>
 	<regex type="pcre2">\bUNIFIdnsServerIp=(\S.*?)(?=\s+[A-Za-z][A-Za-z0-9_]*=|\s*$)</regex>
 	<order>unifi_dns_server_ip</order>
 </decoder>
@@ -778,4 +796,88 @@
 	<parent>ubiquiti</parent>
 	<regex type="pcre2">\bUNIFIwifiName=(\S.*?)(?=\s+[A-Za-z][A-Za-z0-9_]*=|\s*$)</regex>
 	<order>unifi_wifi_name</order>
+</decoder>
+
+<decoder name="ubiquiti">
+	<parent>ubiquiti</parent>
+	<regex type="pcre2">\bUNIFIdstClientAlias=(\S.*?)(?=\s+[A-Za-z][A-Za-z0-9_]*=|\s*$)</regex>
+	<order>unifi_dst_client_alias</order>
+</decoder>
+
+<decoder name="ubiquiti">
+	<parent>ubiquiti</parent>
+	<regex type="pcre2">\bUNIFIdstClientHostname=(\S.*?)(?=\s+[A-Za-z][A-Za-z0-9_]*=|\s*$)</regex>
+	<order>unifi_dst_client_hostname</order>
+</decoder>
+
+<decoder name="ubiquiti">
+	<parent>ubiquiti</parent>
+	<regex type="pcre2">\bUNIFIdstClientMac=(\S.*?)(?=\s+[A-Za-z][A-Za-z0-9_]*=|\s*$)</regex>
+	<order>unifi_dst_client_mac</order>
+</decoder>
+
+<decoder name="ubiquiti">
+	<parent>ubiquiti</parent>
+	<regex type="pcre2">\bUNIFIdstClientModel=(\S.*?)(?=\s+[A-Za-z][A-Za-z0-9_]*=|\s*$)</regex>
+	<order>unifi_dst_client_model</order>
+</decoder>
+
+<decoder name="ubiquiti">
+	<parent>ubiquiti</parent>
+	<regex type="pcre2">\bUNIFIupdateTrigger=(\S.*?)(?=\s+[A-Za-z][A-Za-z0-9_]*=|\s*$)</regex>
+	<order>unifi_update_trigger</order>
+</decoder>
+
+<decoder name="ubiquiti">
+	<parent>ubiquiti</parent>
+	<regex type="pcre2">\bUNIFIapplication=(\S.*?)(?=\s+[A-Za-z][A-Za-z0-9_]*=|\s*$)</regex>
+	<order>unifi_application</order>
+</decoder>
+
+<decoder name="ubiquiti">
+	<parent>ubiquiti</parent>
+	<regex type="pcre2">\bUNIFIapplicationVersion=(\S.*?)(?=\s+[A-Za-z][A-Za-z0-9_]*=|\s*$)</regex>
+	<order>unifi_application_version</order>
+</decoder>
+
+<decoder name="ubiquiti">
+	<parent>ubiquiti</parent>
+	<regex type="pcre2">\bUNIFIapplicationPriorVersion=(\S.*?)(?=\s+[A-Za-z][A-Za-z0-9_]*=|\s*$)</regex>
+	<order>unifi_application_prior_version</order>
+</decoder>
+
+<decoder name="ubiquiti">
+	<parent>ubiquiti</parent>
+	<regex type="pcre2">\bUNIFImeshParentDeviceIp=(\S.*?)(?=\s+[A-Za-z][A-Za-z0-9_]*=|\s*$)</regex>
+	<order>unifi_mesh_parent_device_ip</order>
+</decoder>
+
+<decoder name="ubiquiti">
+	<parent>ubiquiti</parent>
+	<regex type="pcre2">\bUNIFImeshParentDeviceMac=(\S.*?)(?=\s+[A-Za-z][A-Za-z0-9_]*=|\s*$)</regex>
+	<order>unifi_mesh_parent_device_mac</order>
+</decoder>
+
+<decoder name="ubiquiti">
+	<parent>ubiquiti</parent>
+	<regex type="pcre2">\bUNIFImeshParentDeviceModel=(\S.*?)(?=\s+[A-Za-z][A-Za-z0-9_]*=|\s*$)</regex>
+	<order>unifi_mesh_parent_device_model</order>
+</decoder>
+
+<decoder name="ubiquiti">
+	<parent>ubiquiti</parent>
+	<regex type="pcre2">\bUNIFImeshParentDeviceName=(\S.*?)(?=\s+[A-Za-z][A-Za-z0-9_]*=|\s*$)</regex>
+	<order>unifi_mesh_parent_device_name</order>
+</decoder>
+
+<decoder name="ubiquiti">
+	<parent>ubiquiti</parent>
+	<regex type="pcre2">\bUNIFImeshParentDeviceVersion=(\S.*?)(?=\s+[A-Za-z][A-Za-z0-9_]*=|\s*$)</regex>
+	<order>unifi_mesh_parent_device_version</order>
+</decoder>
+
+<decoder name="ubiquiti">
+	<parent>ubiquiti</parent>
+	<regex type="pcre2">\bUNIFIreference=(\S.*?)(?=\s+[A-Za-z][A-Za-z0-9_]*=|\s*$)</regex>
+	<order>unifi_reference</order>
 </decoder>

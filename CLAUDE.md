@@ -6,7 +6,15 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 A single Wazuh decoder file, `ubiquiti_decoders.xml`, that parses UniFi CEF syslog messages. It covers the publicly documented UniFi CEF keys listed at https://help.ui.com/hc/en-us/articles/33349041044119-UniFi-System-Logs-SIEM-Integration. It is a fork of EvilForge/wazuh-unifi-decoder and is MIT-licensed. The license text is also in the XML header comment, so keep that header intact.
 
-There is no build, lint, or test tooling in the repo. To validate changes, you need a Wazuh manager: copy the file into `/var/ossec/etc/decoders/`, restart the manager, and paste sample UniFi CEF lines into `/var/ossec/bin/wazuh-logtest`.
+## Testing
+
+```sh
+./test.py              # restart Wazuh in the lab container, run every sample, check expectations
+./test.py -v           # also list passing samples
+./test.py --no-reload  # skip the ~10 s restart when nothing changed
+```
+
+`test.py` needs the Docker lab described below. It feeds `samples/events.log` through `wazuh-logtest` and checks each line against the `# expect:` comment above it: decoder, rule ID, level, and required non-empty fields. It also fails if a sample contains a CEF key that has no decoder. When a new UniFi event type shows up, anonymize it (hostnames, client names, MACs, IPs), add it to `samples/events.log` with an expectation, and run the tests. Samples marked "synthetic" stand in for events not yet seen from a real controller.
 
 Note: `.gitignore` contains `*/`, which ignores **every subdirectory**. If you add folders such as `rules/` or sample logs, git will skip them until you change `.gitignore`.
 
@@ -42,7 +50,7 @@ This means "capture lazily until the next `key=` token or the end of the line." 
 
 ### Wazuh pitfalls (verified with wazuh-logtest on 4.14.8)
 
-- **The parent decoder needs a `<program_name>`.** UniFi syslog arrives as `Oct 10 16:00:00 UDM-Pro CEF:0|Ubiquiti|…`. Wazuh's pre-decoder treats `CEF` as the program name and strips `CEF:` from the message. When a log has a program name, Wazuh only tries decoders that declare `<program_name>`. A parent with only `<prematch>` therefore never matches real syslog, even though it works on a bare `CEF:0|…` line. Use `<program_name type="pcre2">.*</program_name>`, and write the prematch and header regexes so they don't require the `CEF:` prefix.
+- **There are two parent decoders, and both are needed.** UniFi syslog arrives as `Oct 10 16:00:00 UDM-Pro CEF:0|Ubiquiti|…`. Wazuh's pre-decoder treats `CEF` as the program name and strips `CEF:` from the message. When a log has a program name, Wazuh only tries decoders that declare `<program_name>`; when it has none, it only tries decoders that don't. The first parent therefore uses `<program_name type="pcre2">.*</program_name>` with a prematch that doesn't require `CEF:`. The second parent has no `<program_name>` and covers bare `CEF:0|…` lines. Both are named `ubiquiti`, so every sibling decoder attaches to both. Keep the header regex free of the `CEF:` prefix.
 - **Never put `<!` inside a regex,** for example a negative lookbehind `(?<!…)`. Wazuh's XML parser reads it as the start of a comment, and analysisd refuses to start. Use `\b` instead.
 
 - **Live UniFi output differs from the docs.** UniFi Network 10.x uses categories such as `Audit` and `Client Devices`, not only the documented `Monitoring`/`System`. It also sends keys that the documented list leaves out (`UNIFIsettings*`, `UNIFIutcTime`, `UNIFIwifi*`, `UNIFInetwork*`, `UNIFIusage*`, `UNIFIduration`). Treat real logs as the source of truth.

@@ -1,0 +1,75 @@
+# UniFi CEF syslog samples for test.py.
+#
+# Each log line is preceded by an "# expect:" line:
+#   decoder=NAME     decoder that must match ("!NAME" = must NOT be NAME, "none" = no decoder)
+#   rule=ID level=N  rule that must fire (needs ../wazuh-unifi-rules mounted in the lab)
+#   fields=a,b       decoded fields that must be present and non-empty
+# "live" samples are real controller output with hostnames, client names, MACs and IPs
+# anonymized. "synthetic" samples are hand-written for events not yet seen live.
+
+# --- live: Audit ---
+# expect: decoder=ubiquiti rule=100201 level=5 fields=unifi_admin,unifi_settings_section,unifi_settings_entry,unifi_settings_changes,src,cnt,unifi_utc_time
+Oct 10 15:54:37 UniFi-CK CEF:0|Ubiquiti|UniFi Network|10.6.106|546|Config Modified|5|UNIFIcategory=Audit UNIFIsite=Default UNIFIhost=Cloud Key+ UNIFIsettingsChanges=contents[access_points]: access_points; log_all_contents: true; contents[gateway]: gateway; contents[firewall_default_policy]: firewall_default_policy; contents[switches]: switches UNIFIaccessMethod=web UNIFIsettingsSection=System UNIFIsettingsEntry=rsyslogd UNIFIadmin=admin src=192.168.1.59 cnt=5 UNIFIutcTime=2026-10-10T19:54:37.420Z msg=admin made 5 changes to System settings. Source IP: 192.168.1.59
+
+# --- live: Client Devices ---
+# expect: decoder=ubiquiti rule=100010 level=2 fields=unifi_client_alias,srcip,unifi_duration,unifi_usage_up,unifi_usage_down,unifi_network_vlan,unifi_wifi_interference,unifi_last_connected_to_wifi_rssi
+Oct 10 15:54:50 UniFi-CK CEF:0|Ubiquiti|UniFi Network|10.6.106|401|WiFi Client Disconnected|2|UNIFIcategory=Client Devices UNIFIsite=Default UNIFIhost=Cloud Key+ UNIFIlastConnectedToDeviceName=U6 Mesh Pro UNIFIlastConnectedToDeviceIp=192.168.1.15 UNIFIlastConnectedToDeviceMac=02:00:00:00:00:01 UNIFIlastConnectedToDeviceModel=U6-Mesh-Pro UNIFIlastConnectedToDeviceVersion=8.8.11 UNIFIclientAlias=Plug-01 00:02 UNIFIclientHostname=Plug-01 UNIFIclientIp=192.168.1.68 UNIFIclientMac=02:00:00:00:00:02 UNIFIwifiChannel=1 UNIFIwifiChannelWidth=20 UNIFIwifiName=HomeWiFi UNIFIwifiBand=ng UNIFIwifiAirtimeUtilization=69 UNIFIwifiInterference=55 UNIFIlastConnectedToWiFiRssi=-44 UNIFIduration=8m 35s UNIFIusageDown=17.61 KB UNIFIusageUp=24.97 KB UNIFInetworkName=Internal UNIFInetworkSubnet=192.168.1.0/24 UNIFInetworkVlan=1 UNIFIutcTime=2026-10-10T19:54:50.008Z msg=Plug-01 00:02 disconnected from HomeWiFi. Time Connected: 8m 35s. Data Used: 24.97 KB (up) / 17.61 KB (down). Last Connected To: U6 Mesh Pro at -44 dBm.
+# expect: decoder=ubiquiti rule=100010 level=2 fields=unifi_connected_to_device_name,unifi_last_connected_to_device_name,unifi_last_connected_to_wifi_channel,unifi_wifi_rssi,srcip,dstip
+Oct 10 15:54:50 UniFi-CK CEF:0|Ubiquiti|UniFi Network|10.6.106|402|WiFi Client Roamed|1|UNIFIcategory=Client Devices UNIFIsite=Default UNIFIhost=Cloud Key+ UNIFIconnectedToDeviceName=U6 Mesh Pro UNIFIconnectedToDeviceIp=192.168.1.15 UNIFIconnectedToDeviceMac=02:00:00:00:00:01 UNIFIconnectedToDeviceModel=U6-Mesh-Pro UNIFIconnectedToDeviceVersion=8.8.11 UNIFIlastConnectedToDeviceName=U6 Mesh Office  UNIFIlastConnectedToDeviceIp=192.168.1.221 UNIFIlastConnectedToDeviceMac=02:00:00:00:00:03 UNIFIlastConnectedToDeviceModel=U6-Mesh UNIFIlastConnectedToDeviceVersion=8.8.11 UNIFIclientAlias=Watch-01 00:04 UNIFIclientHostname=Watch-01 UNIFIclientIp=192.168.1.63 UNIFIclientMac=02:00:00:00:00:04 UNIFIwifiChannel=1 UNIFIwifiChannelWidth=20 UNIFIwifiName=HomeWiFi UNIFIwifiBand=ng UNIFIWiFiRssi=-50 UNIFIlastConnectedToWiFiChannel=6 UNIFIlastConnectedToWiFiChannelWidth=20 UNIFIlastConnectedToWiFiBand=ng UNIFIlastConnectedToWiFiRssi=-70 UNIFIutcTime=2026-10-10T19:54:50.577Z msg=Watch-01 00:04 roamed from U6 Mesh Office  to U6 Mesh Pro. Connection Info: Ch. 1 (2.4 GHz, 20 MHz), -50 dBm. Roaming Decision: -70 dBm to -50 dBm.
+# expect: decoder=ubiquiti rule=100010 level=2 fields=unifi_auth_method,unifi_wifi_name,unifi_wifi_band,unifi_network_subnet,system_name
+Oct 10 15:55:09 UniFi-CK CEF:0|Ubiquiti|UniFi Network|10.6.106|400|WiFi Client Connected|1|UNIFIcategory=Client Devices UNIFIsite=Default UNIFIhost=Cloud Key+ UNIFIconnectedToDeviceName=U6 Mesh Pro UNIFIconnectedToDeviceIp=192.168.1.15 UNIFIconnectedToDeviceMac=02:00:00:00:00:01 UNIFIconnectedToDeviceModel=U6-Mesh-Pro UNIFIconnectedToDeviceVersion=8.8.11 UNIFIclientAlias=Switch-01 00:05 UNIFIclientHostname=Switch-01 UNIFIclientIp=192.168.1.232 UNIFIclientMac=02:00:00:00:00:05 UNIFIwifiChannel=1 UNIFIwifiChannelWidth=20 UNIFIwifiName=HomeWiFi UNIFIwifiBand=ng UNIFIauthMethod=wpapsk UNIFIWiFiRssi=-37 UNIFInetworkName=Internal UNIFInetworkSubnet=192.168.1.0/24 UNIFInetworkVlan=1 UNIFIutcTime=2026-10-10T19:55:09.208Z msg=Switch-01 00:05 connected to HomeWiFi on U6 Mesh Pro. Connection Info: Ch. 1 (2.4 GHz, 20 MHz), -37 dBm. IP: 192.168.1.232
+
+# --- live: Security ---
+# expect: decoder=ubiquiti rule=100102 level=10 fields=unifi_client_alias,unifi_client_mac,unifi_device_name,unifi_device_version
+Oct 10 16:05:13 UniFi-CK CEF:0|Ubiquiti|UniFi Network|10.6.106|202|Honeypot Triggered|6|UNIFIcategory=Security UNIFIsite=Default UNIFIhost=Cloud Key+ UNIFIdeviceMac=02:00:00:00:00:06 UNIFIdeviceName=Gateway Max UNIFIdeviceModel=Gateway Max UNIFIdeviceIp=192.168.1.1 UNIFIdeviceVersion=6.0.10 UNIFIclientAlias=Laptop-01 00:07 UNIFIclientHostname=Laptop-01 UNIFIclientMac=02:00:00:00:00:07 UNIFIutcTime=2026-10-10T20:05:13.096Z msg=Honeypot triggered by Laptop-01 00:07.
+# expect: decoder=ubiquiti rule=100105 level=12 fields=src,srcip,unifi_dst_client_alias,unifi_dst_client_hostname,unifi_dst_client_mac,unifi_dst_client_model
+Sep  8 18:51:42 UniFi-CK CEF:0|Ubiquiti|UniFi Network|10.6.101|201|Threat Detected and Blocked|9|UNIFIcategory=Security UNIFIsite=Default UNIFIhost=Cloud Key+ UNIFIdeviceMac=02:00:00:00:00:06 UNIFIdeviceName=Gateway Max UNIFIdeviceModel=Gateway Max UNIFIdeviceIp=192.168.1.1 UNIFIdeviceVersion=6.0.5 src=203.0.113.10 UNIFIdstClientAlias=Phone-01 00:08 UNIFIdstClientHostname=Phone-01 UNIFIdstClientMac=02:00:00:00:00:08 UNIFIdstClientModel=Windows PC UNIFIutcTime=2026-09-08T22:51:42.411Z msg=A network intrusion attempt from 203.0.113.10 to Phone-01 00:08 has been detected and blocked.
+
+# --- live: Software Updates ---
+# expect: decoder=ubiquiti rule=100302 level=5 fields=unifi_device_name,unifi_device_version,unifi_device_prior_version,unifi_update_trigger
+Sep 19 03:02:03 UniFi-CK CEF:0|Ubiquiti|UniFi Network|10.6.106|510|Device Updated|4|UNIFIcategory=Software Updates UNIFIsite=Default UNIFIhost=Cloud Key+ UNIFIdeviceMac=02:00:00:00:00:01 UNIFIdeviceName=U6 Mesh Pro UNIFIdeviceModel=U6-Mesh-Pro UNIFIdeviceIp=192.168.1.15 UNIFIdeviceVersion=8.8.9 UNIFIdevicePriorVersion=8.8.8 UNIFIupdateTrigger=Auto Update UNIFIutcTime=2026-09-19T07:02:03.109Z msg=U6 Mesh Pro has updated to 8.8.9
+# expect: decoder=ubiquiti rule=100303 level=5 fields=unifi_application,unifi_application_version,unifi_application_prior_version
+Sep 16 00:14:32 UniFi-CK CEF:0|Ubiquiti|UniFi Network|10.6.106|578|Network Updated|4|UNIFIcategory=Software Updates UNIFIhost=Cloud Key+ UNIFIapplication=UniFi Network UNIFIapplicationVersion=10.6.106 UNIFIapplicationPriorVersion=10.6.101 UNIFIutcTime=2026-09-16T04:14:32.207Z msg=UniFi Network has updated to 10.6.106
+
+# --- live: UniFi Devices ---
+# expect: decoder=ubiquiti rule=100304 level=10 fields=unifi_device_name,unifi_mesh_parent_device_name,unifi_mesh_parent_device_ip,unifi_mesh_parent_device_mac,unifi_mesh_parent_device_model,unifi_mesh_parent_device_version,unifi_reference
+Oct  8 09:47:53 UniFi-CK CEF:0|Ubiquiti|UniFi Network|10.6.106|575|AP Meshed|7|UNIFIcategory=UniFi Devices UNIFIsite=Default UNIFIhost=Cloud Key+ UNIFIdeviceMac=02:00:00:00:00:03 UNIFIdeviceName=U6 Mesh Office  UNIFIdeviceModel=U6-Mesh UNIFIdeviceIp=192.168.1.221 UNIFIdeviceVersion=8.8.11 UNIFImeshParentDeviceName=U6 Mesh Pro UNIFImeshParentDeviceIp=192.168.1.15 UNIFImeshParentDeviceMac=02:00:00:00:00:01 UNIFImeshParentDeviceModel=U6-Mesh-Pro UNIFImeshParentDeviceVersion=8.8.11 UNIFIreference=https://help.ui.com/hc/en-us/articles/115002262328 UNIFIutcTime=2026-10-08T13:47:53.331Z msg=U6 Mesh Office  meshed to parent U6 Mesh Pro.
+
+# --- synthetic: UniFi documentation example, IPs replaced ---
+# expect: decoder=ubiquiti rule=100200 level=3 fields=unifi_admin,unifi_access_method,src,unifi_sub-category
+Oct 10 16:00:00 UDM-Pro CEF:0|Ubiquiti|UniFi Network|10.6.106|544|Admin Accessed UniFi Network|1|UNIFIcategory=System UNIFIsubCategory=Admin UNIFIhost=Office UDM Pro UNIFIaccessMethod=web UNIFIadmin=admin src=198.51.100.7 msg=admin accessed UniFi Network using the web. Source IP: 198.51.100.7
+
+# --- synthetic: events not yet seen live ---
+# expect: decoder=ubiquiti rule=100100 level=13 fields=unifi_risk
+Oct 10 16:00:00 UDM-Pro CEF:0|Ubiquiti|UniFi Network|10.6.106|900|Threat Detected and Blocked|7|UNIFIcategory=Security UNIFIsubCategory=Intrusion Prevention UNIFIrisk=high src=203.0.113.9 msg=Threat blocked
+# expect: decoder=ubiquiti rule=100103 level=5
+Oct 10 16:00:00 UDM-Pro CEF:0|Ubiquiti|UniFi Network|10.6.106|903|Blocked by Firewall|3|UNIFIcategory=Security UNIFIsubCategory=Firewall src=198.51.100.4 msg=Blocked
+# expect: decoder=ubiquiti rule=100300 level=8
+Oct 10 16:00:00 UDM-Pro CEF:0|Ubiquiti|UniFi Network|10.6.106|904|WAN Failover|5|UNIFIcategory=Internet UNIFIsubCategory=Outage & Failover msg=WAN failover to backup
+# expect: decoder=ubiquiti rule=100301 level=7
+Oct 10 16:00:00 UDM-Pro CEF:0|Ubiquiti|UniFi Network|10.6.106|905|Device Offline|4|UNIFIcategory=System UNIFIsubCategory=Devices UNIFIdeviceName=Lobby AP msg=Lobby AP is offline
+# expect: decoder=ubiquiti rule=100390 level=12
+Oct 10 16:00:00 UDM-Pro CEF:0|Ubiquiti|UniFi Network|10.6.106|906|Synthetic Severity Nine|9|UNIFIcategory=System msg=x
+# expect: decoder=ubiquiti rule=100391 level=10
+Oct 10 16:00:00 UDM-Pro CEF:0|Ubiquiti|UniFi Network|10.6.106|907|Synthetic Severity Eight|8|UNIFIcategory=System msg=x
+# expect: decoder=ubiquiti rule=100392 level=5
+Oct 10 16:00:00 UDM-Pro CEF:0|Ubiquiti|UniFi Network|10.6.106|908|Synthetic Severity Four|4|UNIFIcategory=Power msg=x
+
+# --- parsing edge cases ---
+# Bare CEF without a syslog header (no program_name).
+# expect: decoder=ubiquiti fields=event.id,event.name,event.severity,src
+CEF:0|Ubiquiti|UniFi Network|10.6.106|544|Admin Accessed UniFi Network|1|UNIFIcategory=System src=198.51.100.7 msg=test
+# Syslog header with an explicit program name.
+# expect: decoder=ubiquiti fields=event.id,src
+Oct 10 16:00:00 UDM-Pro unifi: CEF:0|Ubiquiti|UniFi Network|10.6.106|544|Admin Accessed UniFi Network|1|src=198.51.100.7 msg=test
+# Two-digit CEF severity.
+# expect: decoder=ubiquiti rule=100390 level=12 fields=event.severity
+Oct 10 16:00:00 UDM-Pro CEF:0|Ubiquiti|UniFi Network|10.6.106|909|Synthetic Severity Ten|10|UNIFIcategory=System msg=x
+
+# --- must NOT be decoded as UniFi CEF ---
+# Non-CEF debug syslog from a UniFi switch (anonymized).
+# expect: decoder=!ubiquiti
+Oct 10 15:54:42 USW-Pro-8 020000000009,USW-Pro-8-PoE-7.6.5+17224: syswrapper[5247]: Provision took 3 sec, full=0, persist=1
+# Unrelated syslog must keep its own decoder.
+# expect: decoder=sshd
+Oct 10 16:00:00 myhost sshd[1]: Accepted password for root from 198.51.100.8 port 22 ssh2
