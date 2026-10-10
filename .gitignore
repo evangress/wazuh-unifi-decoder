@@ -1,6 +1,7 @@
 ### Any Directory ###
 */
 !samples/
+!lab/
 
 ### IntelliJ IDEA ###
 out/

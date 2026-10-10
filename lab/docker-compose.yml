@@ -1,0 +1,23 @@
+# Wazuh manager lab for testing the UniFi decoder and rules (see lab/README.md).
+#
+#   docker compose -f lab/docker-compose.yml up -d     # start
+#   ./test.py                                         # run samples/events.log
+#   docker compose -f lab/docker-compose.yml down -v   # stop and delete
+#
+# Expects the rules repo cloned next to this one (../wazuh-unifi-rules); override with
+# UNIFI_RULES_REPO=/path/to/wazuh-unifi-rules.
+name: wazuh-unifi-lab
+
+services:
+  wazuh-manager:
+    image: wazuh/wazuh-manager:4.14.8
+    container_name: wazuh-lab        # test.py's default --container
+    hostname: wazuh-lab
+    ports:
+      - "514:514/udp"                # UniFi SIEM syslog; point the controller at <this host>:514
+    volumes:
+      # The image copies this over /var/ossec/etc/ossec.conf at startup.
+      - ./ossec.conf:/wazuh-config-mount/etc/ossec.conf:ro
+      # Mount whole directories: single-file bind mounts break when an editor replaces the file.
+      - ..:/var/ossec/etc/unifi-decoder:ro
+      - ${UNIFI_RULES_REPO:-../../wazuh-unifi-rules}:/var/ossec/etc/unifi-rules:ro

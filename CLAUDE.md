@@ -61,21 +61,15 @@ Alert rules live in `../wazuh-unifi-rules/ubiquiti_rules.xml`, with rule IDs 100
 
 ## Lab testing in Docker
 
-Mount both repos as **directories**. A single-file bind mount silently breaks when an editor or `sed -i` replaces the file instead of writing in place, and the file then disappears inside the container.
+The lab is defined in `lab/`: `docker-compose.yml`, a lab-only `ossec.conf`, and `README.md`, which covers pointing a live controller at it and firewall troubleshooting. It expects `wazuh-unifi-rules` cloned next to this repo; override that with `UNIFI_RULES_REPO`.
 
 ```sh
-docker run -d --name wazuh-lab -h wazuh-lab -p 514:514/udp \
-  -v <lab>/ossec.conf:/wazuh-config-mount/etc/ossec.conf:ro \
-  -v "$PWD":/var/ossec/etc/unifi-decoder:ro \
-  -v "$PWD/../wazuh-unifi-rules":/var/ossec/etc/unifi-rules:ro \
-  wazuh/wazuh-manager:4.14.8
-docker exec wazuh-lab /var/ossec/bin/wazuh-control restart        # after any decoder/rule edit
-docker exec -i wazuh-lab /var/ossec/bin/wazuh-logtest < samples.log  # decoder + rule results per line
+docker compose -f lab/docker-compose.yml up -d     # container "wazuh-lab", syslog on 514/udp
+./test.py                                         # restarts Wazuh, runs samples/events.log
+docker compose -f lab/docker-compose.yml down -v   # delete it; nothing in it needs keeping
 ```
 
-The lab `ossec.conf` differs from the default in these ways:
-- `<decoder_dir pattern=".xml$">etc/unifi-decoder</decoder_dir>` and `<rule_dir pattern=".xml$">etc/unifi-rules</rule_dir>` inside `<ruleset>`.
-- A `<remote><connection>syslog</connection><port>514</port><protocol>udp</protocol><allowed-ips>0.0.0.0/0</allowed-ips></remote>` block.
-- `<logall_json>yes</logall_json>`, so events that match no rule still land in `logs/archives/archives.json`.
-
-On Docker Desktop, incoming UDP shows the Docker gateway as its source (for example `192.168.65.1`), not the controller's IP. After an edit, check `grep analysisd /var/ossec/logs/ossec.log` for XML errors and duplicate rule IDs.
+- The compose file mounts both repos as **directories** on purpose. A single-file bind mount silently breaks when an editor or `sed -i` replaces the file instead of writing in place, and the file then disappears inside the container.
+- `lab/ossec.conf` is the image's default config plus changes marked `LAB`: full archiving (`logall_json`), a syslog listener on 514/udp open to any IP, and `decoder_dir`/`rule_dir` entries for the mounted repos. Regenerate it from the image if you upgrade Wazuh.
+- On Docker Desktop, incoming UDP shows the Docker gateway as its source (for example `192.168.65.1`), not the controller's IP.
+- After an edit, check `docker exec wazuh-lab grep analysisd /var/ossec/logs/ossec.log` for XML errors and duplicate rule IDs. `test.py` reports new ones automatically.
