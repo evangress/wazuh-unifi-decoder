@@ -35,8 +35,60 @@ Sep 16 00:14:32 UniFi-CK CEF:0|Ubiquiti|UniFi Network|10.6.106|578|Network Updat
 # expect: decoder=ubiquiti rule=100304 level=10 fields=unifi_device_name,unifi_mesh_parent_device_name,unifi_mesh_parent_device_ip,unifi_mesh_parent_device_mac,unifi_mesh_parent_device_model,unifi_mesh_parent_device_version,unifi_reference
 Oct  8 09:47:53 UniFi-CK CEF:0|Ubiquiti|UniFi Network|10.6.106|575|AP Meshed|7|UNIFIcategory=UniFi Devices UNIFIsite=Default UNIFIhost=Cloud Key+ UNIFIdeviceMac=02:00:00:00:00:03 UNIFIdeviceName=U6 Mesh Office  UNIFIdeviceModel=U6-Mesh UNIFIdeviceIp=192.168.1.221 UNIFIdeviceVersion=8.8.11 UNIFImeshParentDeviceName=U6 Mesh Pro UNIFImeshParentDeviceIp=192.168.1.15 UNIFImeshParentDeviceMac=02:00:00:00:00:01 UNIFImeshParentDeviceModel=U6-Mesh-Pro UNIFImeshParentDeviceVersion=8.8.11 UNIFIreference=https://help.ui.com/hc/en-us/articles/115002262328 UNIFIutcTime=2026-10-08T13:47:53.331Z msg=U6 Mesh Office  meshed to parent U6 Mesh Pro.
 
+# --- live: Internet and WAN ---
+# expect: decoder=ubiquiti rule=100310 level=12 fields=unifi_wan_id,unifi_wan_isp,unifi_wan_port,unifi_wan_name,unifi_wan_sla
+CEF:0|Ubiquiti|UniFi Network|10.6.101|100|Internet Down|10|UNIFIcategory=Internet and WAN UNIFIsite=Default UNIFIhost=Cloud Key+ UNIFIdeviceMac=02:00:00:00:00:05 UNIFIdeviceName=Gateway Max UNIFIdeviceModel=Gateway Max UNIFIdeviceIp=192.168.1.1 UNIFIdeviceVersion=6.0.5 UNIFIwanName=Internet 1 UNIFIwanId=WAN1 UNIFIwanPort=5 UNIFIwanIsp=Example ISP UNIFIwanSla=Auto UNIFIutcTime=2026-09-14T14:13:54.306Z msg=Internet connection WAN1 (Example ISP) on port 5 is down.
+# expect: decoder=ubiquiti rule=100311 level=12 fields=unifi_wan_id,cnt,unifi_reported_duration,unifi_wan_subnet
+CEF:0|Ubiquiti|UniFi Network|10.6.101|101|Multiple Internet Disconnections|10|UNIFIcategory=Internet and WAN UNIFIsite=Default UNIFIhost=Cloud Key+ UNIFIdeviceMac=02:00:00:00:00:05 UNIFIdeviceName=Gateway Max UNIFIdeviceModel=Gateway Max UNIFIdeviceIp=192.168.1.1 UNIFIdeviceVersion=6.0.5 UNIFIwanName=Internet 1 UNIFIwanId=WAN1 UNIFIwanPort=5 UNIFIwanIsp=Example ISP UNIFIwanSubnet=203.0.113.202/22 UNIFIwanSla=Auto cnt=2 UNIFIreportedDuration=1h 58m UNIFIutcTime=2026-09-14T14:15:07.143Z msg=Internet connection WAN1 (Example ISP) on port 5 went down multiple times in the last 24 hours.
+# expect: decoder=ubiquiti rule=100312 level=7 fields=unifi_wan_id,unifi_reported_duration
+CEF:0|Ubiquiti|UniFi Network|10.6.101|104|Temporary Internet Disconnection|6|UNIFIcategory=Internet and WAN UNIFIsite=Default UNIFIhost=Cloud Key+ UNIFIdeviceMac=02:00:00:00:00:05 UNIFIdeviceName=Gateway Max UNIFIdeviceModel=Gateway Max UNIFIdeviceIp=192.168.1.1 UNIFIdeviceVersion=6.0.5 UNIFIwanName=Internet 1 UNIFIwanId=WAN1 UNIFIwanPort=5 UNIFIwanIsp=Example ISP UNIFIwanSubnet=203.0.113.202/22 UNIFIwanSla=Auto UNIFIreportedDuration=28s UNIFIutcTime=2026-09-10T06:58:53.982Z msg=Internet connection WAN1 (Example ISP) on port 5 is restored after a temporary disconnection.
+# expect: decoder=ubiquiti rule=100313 level=5 fields=unifi_wan_id,unifi_reported_duration
+CEF:0|Ubiquiti|UniFi Network|10.6.101|107|Internet Restored|6|UNIFIcategory=Internet and WAN UNIFIsite=Default UNIFIhost=Cloud Key+ UNIFIdeviceMac=02:00:00:00:00:05 UNIFIdeviceName=Gateway Max UNIFIdeviceModel=Gateway Max UNIFIdeviceIp=192.168.1.1 UNIFIdeviceVersion=6.0.5 UNIFIwanName=Internet 1 UNIFIwanId=WAN1 UNIFIwanPort=5 UNIFIwanIsp=Example ISP UNIFIwanSubnet=203.0.113.202/22 UNIFIwanSla=Auto UNIFIreportedDuration=2m 12s UNIFIutcTime=2026-09-14T14:15:07.028Z msg=Internet connection WAN1 (Example ISP) on port 5 is restored.
+# expect: decoder=ubiquiti rule=100314 level=5 fields=unifi_wan_id,unifi_wan_latency
+CEF:0|Ubiquiti|UniFi Network|10.6.106|112|High Latency Detected|4|UNIFIcategory=Internet and WAN UNIFIsite=Default UNIFIhost=Cloud Key+ UNIFIdeviceMac=02:00:00:00:00:05 UNIFIdeviceName=Gateway Max UNIFIdeviceModel=Gateway Max UNIFIdeviceIp=192.168.1.1 UNIFIdeviceVersion=6.0.10 UNIFIwanName=Internet 1 UNIFIwanId=WAN1 UNIFIwanPort=5 UNIFIwanIsp=Example ISP UNIFIwanSubnet=203.0.113.202/22 UNIFIwanSla=Auto UNIFIwanLatency=31 UNIFIutcTime=2026-10-07T22:30:35.638Z msg=Internet connection WAN1 (Example ISP) on port 5 is experiencing high latency.
+# expect: decoder=ubiquiti rule=100315 level=5 fields=unifi_wan_id,unifi_wan_isp
+CEF:0|Ubiquiti|UniFi Network|10.6.101|113|Packet Loss Detected|4|UNIFIcategory=Internet and WAN UNIFIsite=Default UNIFIhost=Cloud Key+ UNIFIdeviceMac=02:00:00:00:00:05 UNIFIdeviceName=Gateway Max UNIFIdeviceModel=Gateway Max UNIFIdeviceIp=192.168.1.1 UNIFIdeviceVersion=6.0.5 UNIFIwanName=Internet 1 UNIFIwanId=WAN1 UNIFIwanIsp=Example ISP UNIFIwanSla=Auto UNIFIutcTime=2026-09-14T11:13:33.483Z msg=Internet connection WAN1 (Example ISP) on port 5 is experiencing packet loss.
+
+# --- live: UniFi Devices (offline, mesh) ---
+# expect: decoder=ubiquiti rule=100301 level=10 fields=unifi_device_name,unifi_device_model,unifi_device_ip,unifi_reference
+CEF:0|Ubiquiti|UniFi Network|10.6.101|512|Device Offline|8|UNIFIcategory=UniFi Devices UNIFIsite=Default UNIFIhost=Cloud Key+ UNIFIdeviceMac=02:00:00:00:00:03 UNIFIdeviceName=Cable Internet UNIFIdeviceModel=UCI UNIFIdeviceIp=192.168.100.1 UNIFIdeviceVersion=1.5.3 UNIFIreference=https://help.ui.com/hc/en-us/articles/7258465146519 UNIFIutcTime=2026-09-14T11:16:25.953Z msg=Cable Internet went offline.
+# expect: decoder=ubiquiti rule=100305 level=12 fields=unifi_device_list,cnt
+CEF:0|Ubiquiti|UniFi Network|10.6.101|515|Multiple Devices Offline|9|UNIFIcategory=UniFi Devices UNIFIsite=Default UNIFIhost=Cloud Key+ UNIFIdeviceList=USW Pro 8 PoE, U6 Mesh Pro, USW Flex Mini cnt=3 UNIFIreference=https://help.ui.com/hc/en-us/articles/7258465146519 UNIFIutcTime=2026-09-15T08:04:00.298Z msg=Multiple devices went offline.
+# expect: decoder=ubiquiti rule=100306 level=5 fields=unifi_device_list,cnt
+CEF:0|Ubiquiti|UniFi Network|10.6.101|516|Multiple Devices Reconnected|5|UNIFIcategory=UniFi Devices UNIFIsite=Default UNIFIhost=Cloud Key+ UNIFIdeviceList=Cable Internet, Gateway Max cnt=2 UNIFIutcTime=2026-09-14T13:08:37.483Z msg=Multiple devices have reconnected.
+# expect: decoder=ubiquiti rule=100307 level=5 fields=unifi_prior_mesh_parent_device_name,unifi_prior_mesh_parent_device_ip,unifi_prior_mesh_parent_device_mac,unifi_prior_mesh_parent_device_model,unifi_prior_mesh_parent_device_version
+CEF:0|Ubiquiti|UniFi Network|10.6.106|576|AP Stopped Mesh|5|UNIFIcategory=UniFi Devices UNIFIsite=Default UNIFIhost=Cloud Key+ UNIFIdeviceMac=02:00:00:00:00:01 UNIFIdeviceName=U6 Mesh Office  UNIFIdeviceModel=U6-Mesh UNIFIdeviceIp=192.168.1.221 UNIFIdeviceVersion=8.8.11 UNIFIpriorMeshParentDeviceName=U6 Mesh Pro UNIFIpriorMeshParentDeviceIp=192.168.1.15 UNIFIpriorMeshParentDeviceMac=02:00:00:00:00:02 UNIFIpriorMeshParentDeviceModel=U6-Mesh-Pro UNIFIpriorMeshParentDeviceVersion=8.8.11 UNIFIreference=https://help.ui.com/hc/en-us/articles/115002262328 UNIFIutcTime=2026-10-08T13:47:17.682Z msg=U6 Mesh Office  stopped meshing to parent U6 Mesh Pro.
+
+# --- live: Security (rogue AP) ---
+# expect: decoder=ubiquiti rule=100106 level=10 fields=unifi_wifi_name,unifi_bssid,unifi_wifi_channel,unifi_detected_by_ap_and_signal_strength,unifi_detected_by_qty
+CEF:0|Ubiquiti|UniFi Network|10.5.67|529|WiFi Impersonation Detected|6|UNIFIcategory=UniFi Devices UNIFIsite=Default UNIFIhost=Cloud Key+ UNIFIdetectedByApAndSignalStrength=U6 Mesh Office , 02:00:00:00:00:01, 46 UNIFIdetectedByQty=1 UNIFIwifiChannel=40 UNIFIwifiName=UniFi Wireless UNIFIwifiBand=na UNIFIbssid=02:00:00:00:00:04 UNIFIutcTime=2026-08-29T07:05:41.792Z msg=U6 Mesh Office  detected a third-party AP broadcasting UniFi Wireless on channel 40 with a signal strength of 46.
+
+# --- live: Client Devices (wired) ---
+# expect: decoder=ubiquiti rule=100010 level=2 fields=unifi_client_alias,unifi_last_connected_to_device_port,unifi_network_vlan,unifi_duration
+CEF:0|Ubiquiti|UniFi Network|10.6.106|404|Wired Client Disconnected|2|UNIFIcategory=Client Devices UNIFIsite=Default UNIFIhost=Cloud Key+ UNIFIlastConnectedToDeviceName=Gateway Max UNIFIlastConnectedToDevicePort=2 UNIFIlastConnectedToDeviceIp=192.168.1.1 UNIFIlastConnectedToDeviceMac=02:00:00:00:01:01 UNIFIlastConnectedToDeviceModel=Gateway Max UNIFIlastConnectedToDeviceVersion=6.0.10 UNIFIclientAlias=Server-01 UNIFIclientIp=192.168.5.10 UNIFIclientMac=02:00:00:00:01:02 UNIFIduration=10d 11h UNIFIusageDown=152.00 B UNIFIusageUp=152.00 B UNIFInetworkName=SRV UNIFInetworkSubnet=192.168.5.0/24 UNIFInetworkVlan=5 UNIFIutcTime=2026-10-10T19:13:24.300Z msg=Server-01 disconnected from SRV on Gateway Max Port 2. Time Connected: 10d 11h. Data Used: 152.00 B (up) / 152.00 B (down).
+
+# --- live: UniFi Devices (adoption, reconnect) ---
+# expect: decoder=ubiquiti rule=100320 level=5 fields=unifi_admin,unifi_device_name,unifi_device_model,unifi_device_mac
+CEF:0|Ubiquiti|UniFi Network|10.6.101|504|Device Adopted|1|UNIFIcategory=UniFi Devices UNIFIsite=Default UNIFIhost=Cloud Key+ UNIFIadmin=admin UNIFIdeviceMac=02:00:00:00:01:03 UNIFIdeviceName=USW Flex Mini UNIFIdeviceModel=USW-Flex-Mini UNIFIdeviceIp=192.168.1.97 UNIFIdeviceVersion=2.1.6 UNIFIutcTime=2026-09-11T23:46:37.429Z msg=admin adopted USW Flex Mini.
+# expect: decoder=ubiquiti rule=100321 level=5 fields=unifi_device_name,unifi_device_ip,unifi_device_mac
+CEF:0|Ubiquiti|UniFi Network|10.6.101|502|Device Ready for Adoption|1|UNIFIcategory=UniFi Devices UNIFIhost=Cloud Key+ UNIFIdeviceMac=02:00:00:00:01:03 UNIFIdeviceName=USW Flex Mini UNIFIdeviceModel=USW-Flex-Mini UNIFIdeviceIp=192.168.1.97 UNIFIdeviceVersion=2.1.6 UNIFIutcTime=2026-09-11T23:45:35.760Z msg=USW Flex Mini is ready for adoption.
+# expect: decoder=ubiquiti rule=100322 level=3 fields=unifi_device_name,unifi_reported_duration,unifi_connected_to_device_name
+CEF:0|Ubiquiti|UniFi Network|10.5.67|513|Device Reconnected|3|UNIFIcategory=UniFi Devices UNIFIsite=Default UNIFIhost=Cloud Key+ UNIFIdeviceMac=02:00:00:00:01:04 UNIFIdeviceName=U6 Mesh Office  UNIFIdeviceModel=U6-Mesh UNIFIdeviceIp=192.168.1.221 UNIFIdeviceVersion=8.8.5 UNIFIconnectedToDeviceName=U6 Mesh Pro UNIFIconnectedToDeviceIp=192.168.1.15 UNIFIconnectedToDeviceMac=02:00:00:00:01:05 UNIFIconnectedToDeviceModel=U6-Mesh-Pro UNIFIconnectedToDeviceVersion=8.8.5 UNIFIreportedDuration=4m 29s UNIFIutcTime=2026-08-29T07:13:56.750Z msg=U6 Mesh Office  has reconnected.
+
+# --- live: Audit (access, create, remove; firewall policy; change by the application itself, no src) ---
+# expect: decoder=ubiquiti rule=100200 level=5 fields=unifi_admin,unifi_access_method,src
+CEF:0|Ubiquiti|UniFi Network|10.6.106|544|Network Accessed|4|UNIFIcategory=Audit UNIFIsite=Default UNIFIhost=Cloud Key+ UNIFIaccessMethod=web UNIFIadmin=admin src=192.168.1.59 UNIFIutcTime=2026-10-10T19:45:07.298Z msg=admin accessed UniFi Network using the web. Source IP: 192.168.1.59
+# expect: decoder=ubiquiti rule=100200 level=5 fields=unifi_admin,unifi_access_method,src
+CEF:0|Ubiquiti|UniFi Network|10.6.106|544|Network Accessed|4|UNIFIcategory=Audit UNIFIsite=Default UNIFIhost=Cloud Key+ UNIFIaccessMethod=android UNIFIadmin=admin src=192.168.1.220 UNIFIutcTime=2026-09-26T22:07:55.067Z msg=admin accessed UniFi Network using the android. Source IP: 192.168.1.220
+# expect: decoder=ubiquiti rule=100203 level=5 fields=unifi_admin,unifi_settings_section,unifi_settings_entry,unifi_settings_changes
+CEF:0|Ubiquiti|UniFi Network|10.6.101|549|Config Removed|6|UNIFIcategory=Audit UNIFIsite=Default UNIFIhost=Cloud Key+ UNIFIsettingsChanges=last_uplink_remote_port:  UNIFIaccessMethod=web UNIFIsettingsSection=Client UNIFIsettingsEntry=USW-Flex-Mini 01:03 UNIFIadmin=admin src=192.168.1.252 UNIFIutcTime=2026-09-11T23:46:37.502Z msg=admin removed USW-Flex-Mini 01:03 Client. Source IP: 192.168.1.252
+# expect: decoder=ubiquiti rule=100204 level=7 fields=unifi_admin,unifi_settings_section,unifi_settings_entry,unifi_settings_changes,src,cnt
+CEF:0|Ubiquiti|UniFi Network|10.6.106|545|Config Created|5|UNIFIcategory=Audit UNIFIsite=Default UNIFIhost=Cloud Key+ UNIFIsettingsChanges=icmp_v6_typename: ANY; destination.match_opposite_ports: false; icmp_typename: ANY; destination.match_opposite_ips: false; destination.zone_id: 68b49419512f17565d224d2a; destination._class: DESTINATION_IP; action: ALLOW; connection_state_type: ALL; source.zone_id: 68b49435512f17565d224dc8; source._class: SOURCE_CLIENT; match_ip_sec: false; match_opposite_protocol: false; schedule.mode: ALWAYS; name: Allow Server-02 to Desktop-01 and NAS-01; create_allow_respond: true; source.matching_target: CLIENT; index: 10001; source.match_opposite_ports: false; destination.ips[192.168.1.43]: 192.168.1.43; source.client_macs[02:00:00:00:01:06]: 02:00:00:00:01:06; logging: false; destination.port_matching_type: ANY; source.port_matching_type: ANY; destination.matching_target_type: SPECIFIC; ip_version: BOTH; protocol: all; destination.matching_target: IP UNIFIaccessMethod=web UNIFIsettingsSection=Firewall Policy UNIFIsettingsEntry=Allow Server-02 to Desktop-01 and NAS-01 UNIFIadmin=admin src=192.168.1.59 cnt=27 UNIFIutcTime=2026-10-04T17:31:01.332Z msg=admin created Allow Server-02 to Desktop-01 and NAS-01 Firewall Policy. Source IP: 192.168.1.59
+# expect: decoder=ubiquiti rule=100201 level=5 fields=unifi_admin,unifi_settings_section,unifi_settings_entry,cnt
+CEF:0|Ubiquiti|UniFi Network|10.6.101|546|Config Modified|5|UNIFIcategory=Audit UNIFIsite=Default UNIFIhost=Cloud Key+ UNIFIsettingsChanges=settings.heartbeat_interval_seconds: 60; settings.silence_threshold_seconds: 900; control_mode: GLOBAL; client_device_mac: 02:00:00:00:01:03 UNIFIsettingsSection=Device UNIFIsettingsEntry=USW Flex Mini UNIFIadmin=Network Application cnt=4 UNIFIutcTime=2026-09-11T23:47:42.873Z msg=Network Application made 4 changes to USW Flex Mini Device settings. Source IP: {IP}
+
 # --- synthetic: UniFi documentation example, IPs replaced ---
-# expect: decoder=ubiquiti rule=100200 level=3 fields=unifi_admin,unifi_access_method,src,unifi_sub-category
+# expect: decoder=ubiquiti rule=100200 level=5 fields=unifi_admin,unifi_access_method,src,unifi_sub-category
 Oct 10 16:00:00 UDM-Pro CEF:0|Ubiquiti|UniFi Network|10.6.106|544|Admin Accessed UniFi Network|1|UNIFIcategory=System UNIFIsubCategory=Admin UNIFIhost=Office UDM Pro UNIFIaccessMethod=web UNIFIadmin=admin src=198.51.100.7 msg=admin accessed UniFi Network using the web. Source IP: 198.51.100.7
 
 # --- synthetic: events not yet seen live ---
@@ -46,8 +98,6 @@ Oct 10 16:00:00 UDM-Pro CEF:0|Ubiquiti|UniFi Network|10.6.106|900|Threat Detecte
 Oct 10 16:00:00 UDM-Pro CEF:0|Ubiquiti|UniFi Network|10.6.106|903|Blocked by Firewall|3|UNIFIcategory=Security UNIFIsubCategory=Firewall src=198.51.100.4 msg=Blocked
 # expect: decoder=ubiquiti rule=100300 level=8
 Oct 10 16:00:00 UDM-Pro CEF:0|Ubiquiti|UniFi Network|10.6.106|904|WAN Failover|5|UNIFIcategory=Internet UNIFIsubCategory=Outage & Failover msg=WAN failover to backup
-# expect: decoder=ubiquiti rule=100301 level=7
-Oct 10 16:00:00 UDM-Pro CEF:0|Ubiquiti|UniFi Network|10.6.106|905|Device Offline|4|UNIFIcategory=System UNIFIsubCategory=Devices UNIFIdeviceName=Lobby AP msg=Lobby AP is offline
 # expect: decoder=ubiquiti rule=100390 level=12
 Oct 10 16:00:00 UDM-Pro CEF:0|Ubiquiti|UniFi Network|10.6.106|906|Synthetic Severity Nine|9|UNIFIcategory=System msg=x
 # expect: decoder=ubiquiti rule=100391 level=10
@@ -57,7 +107,7 @@ Oct 10 16:00:00 UDM-Pro CEF:0|Ubiquiti|UniFi Network|10.6.106|908|Synthetic Seve
 
 # --- parsing edge cases ---
 # Bare CEF without a syslog header (no program_name).
-# expect: decoder=ubiquiti fields=event.id,event.name,event.severity,src
+# expect: decoder=ubiquiti rule=100200 level=5 fields=event.id,event.name,event.severity,src
 CEF:0|Ubiquiti|UniFi Network|10.6.106|544|Admin Accessed UniFi Network|1|UNIFIcategory=System src=198.51.100.7 msg=test
 # Syslog header with an explicit program name.
 # expect: decoder=ubiquiti fields=event.id,src
