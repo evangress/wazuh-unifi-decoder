@@ -8,6 +8,8 @@ A **Wazuh** decoder that parses **Ubiquiti UniFi** CEF syslog into searchable fi
 
 Works with any device that runs UniFi Network and exports logs through **Integration → System Logging / SIEM**: UniFi Dream Machine (UDM, UDM Pro, UDM SE), Cloud Gateway (UCG Ultra, UCG Max), Cloud Key, UniFi OS Server, and self-hosted controllers.
 
+📖 **Docs site with install guide, alert table and FAQ: <https://evangress.github.io/wazuh-unifi-decoder/>**
+
 For alerts, install the companion rule set **[wazuh-unifi-rules](https://github.com/evangress/wazuh-unifi-rules)**. It alerts on IDS/IPS threats, admin logins, config and firewall changes, WAN outages and offline devices.
 
 ## What gets decoded

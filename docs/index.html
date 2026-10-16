@@ -1,0 +1,260 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Wazuh UniFi Decoder &amp; Rules – UniFi CEF Syslog for Wazuh SIEM</title>
+<meta name="description" content="Free, MIT-licensed Wazuh decoder and alert rules for Ubiquiti UniFi CEF syslog. Send logs from a UDM Pro, UDM SE, Cloud Gateway or Cloud Key to Wazuh and get alerts for IPS threats, admin logins, config changes, WAN outages and offline devices.">
+<meta name="keywords" content="Wazuh, UniFi, Ubiquiti, UDM Pro, UniFi Dream Machine, Cloud Gateway, Cloud Key, CEF, syslog, SIEM, Wazuh decoder, Wazuh rules, UniFi SIEM integration, IDS, IPS">
+<meta name="author" content="Evan Gress">
+<link rel="canonical" href="https://evangress.github.io/wazuh-unifi-decoder/">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Wazuh UniFi Decoder & Rules – UniFi CEF Syslog for Wazuh SIEM">
+<meta property="og:description" content="Decode Ubiquiti UniFi CEF syslog in Wazuh and alert on IPS threats, admin logins, config changes, WAN outages and offline devices.">
+<meta property="og:url" content="https://evangress.github.io/wazuh-unifi-decoder/">
+<meta name="twitter:card" content="summary">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "SoftwareSourceCode",
+      "name": "wazuh-unifi-decoder",
+      "description": "Wazuh decoder for Ubiquiti UniFi CEF syslog messages.",
+      "codeRepository": "https://github.com/evangress/wazuh-unifi-decoder",
+      "programmingLanguage": "XML",
+      "runtimePlatform": "Wazuh",
+      "license": "https://opensource.org/licenses/MIT",
+      "author": {"@type": "Person", "name": "Evan Gress", "url": "https://github.com/evangress"}
+    },
+    {
+      "@type": "SoftwareSourceCode",
+      "name": "wazuh-unifi-rules",
+      "description": "Wazuh alert rules for Ubiquiti UniFi CEF syslog events.",
+      "codeRepository": "https://github.com/evangress/wazuh-unifi-rules",
+      "programmingLanguage": "XML",
+      "runtimePlatform": "Wazuh",
+      "license": "https://opensource.org/licenses/MIT",
+      "author": {"@type": "Person", "name": "Evan Gress", "url": "https://github.com/evangress"}
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        {"@type": "Question", "name": "How do I send UniFi logs to Wazuh?",
+         "acceptedAnswer": {"@type": "Answer", "text": "Install ubiquiti_decoders.xml and ubiquiti_rules.xml on the Wazuh manager, add a syslog <remote> listener on 514/udp that allows your UniFi console's IP, restart the manager, then in UniFi Network go to Integration → System Logging / SIEM, choose SIEM Server and enter the Wazuh manager's IP and port 514."}},
+        {"@type": "Question", "name": "Why does Wazuh not decode my UniFi syslog?",
+         "acceptedAnswer": {"@type": "Answer", "text": "UniFi syslog arrives with a syslog header, so Wazuh's pre-decoder treats CEF as the program name. Many older UniFi decoders only match lines that start with CEF: and never fire on real traffic. This decoder handles both syslog-framed and bare CEF lines."}},
+        {"@type": "Question", "name": "Which UniFi hardware is supported?",
+         "acceptedAnswer": {"@type": "Answer", "text": "Any console running UniFi Network with the SIEM / CEF syslog integration: UniFi Dream Machine (UDM, UDM Pro, UDM SE, UDM Pro Max), Cloud Gateways (UCG Ultra, UCG Max, UCG Fiber), Cloud Key Gen2 / Gen2 Plus, UniFi Express and self-hosted UniFi Network servers. It has been tested against UniFi Network 10.x on Wazuh 4.14."}}
+      ]
+    }
+  ]
+}
+</script>
+<style>
+:root {
+  --bg: #fbfbfa; --surface: #ffffff; --text: #1d2125; --muted: #5b636b;
+  --border: #e3e5e8; --accent: #006fff; --accent-soft: #e8f1ff; --code-bg: #f3f4f6;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #111417; --surface: #181c20; --text: #e6e8ea; --muted: #9aa3ab;
+    --border: #2a3036; --accent: #4d9bff; --accent-soft: #14273f; --code-bg: #1f2429;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #111417; --surface: #181c20; --text: #e6e8ea; --muted: #9aa3ab;
+  --border: #2a3036; --accent: #4d9bff; --accent-soft: #14273f; --code-bg: #1f2429;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0; background: var(--bg); color: var(--text);
+  font: 16px/1.6 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+a { color: var(--accent); }
+.wrap { max-width: 860px; margin: 0 auto; padding: 0 16px; }
+header { padding: 56px 0 32px; border-bottom: 1px solid var(--border); }
+header p.kicker { margin: 0 0 8px; color: var(--accent); font-weight: 600; font-size: 14px; letter-spacing: .04em; text-transform: uppercase; }
+h1 { font-size: clamp(28px, 5vw, 40px); line-height: 1.15; margin: 0 0 16px; }
+.lede { font-size: 18px; color: var(--muted); margin: 0 0 24px; }
+.buttons { display: flex; flex-wrap: wrap; gap: 10px; }
+.btn { display: inline-block; padding: 9px 16px; border-radius: 8px; border: 1px solid var(--border); background: var(--surface); color: var(--text); text-decoration: none; font-weight: 600; font-size: 15px; }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+nav.toc { padding: 16px 0; border-bottom: 1px solid var(--border); font-size: 14px; }
+nav.toc a { margin-right: 16px; text-decoration: none; white-space: nowrap; line-height: 2; }
+main section { padding: 36px 0 8px; }
+h2 { font-size: 24px; margin: 0 0 12px; }
+h3 { font-size: 18px; margin: 24px 0 8px; }
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px; margin: 16px 0; }
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 16px 18px; }
+.card h3 { margin: 0 0 6px; font-size: 17px; }
+.card p { margin: 0; color: var(--muted); font-size: 15px; }
+pre { background: var(--code-bg); border: 1px solid var(--border); border-radius: 8px; padding: 14px 16px; overflow-x: auto; font-size: 13.5px; line-height: 1.5; }
+code { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: .9em; }
+p code, li code, td code { background: var(--code-bg); padding: 1px 5px; border-radius: 4px; }
+.table-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: 10px; background: var(--surface); }
+table { border-collapse: collapse; width: 100%; font-size: 14.5px; }
+th, td { text-align: left; padding: 9px 12px; border-bottom: 1px solid var(--border); vertical-align: top; }
+th { font-weight: 600; background: var(--code-bg); }
+tr:last-child td { border-bottom: none; }
+td.lvl { font-variant-numeric: tabular-nums; text-align: right; white-space: nowrap; }
+.note { background: var(--accent-soft); border-radius: 8px; padding: 12px 16px; font-size: 15px; }
+details { border-bottom: 1px solid var(--border); padding: 12px 0; }
+summary { cursor: pointer; font-weight: 600; }
+footer { margin-top: 48px; padding: 24px 0 48px; border-top: 1px solid var(--border); color: var(--muted); font-size: 14px; }
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <p class="kicker">Open source · MIT · Wazuh 4.x</p>
+    <h1>Wazuh decoder and rules for Ubiquiti UniFi syslog</h1>
+    <p class="lede">Send CEF logs from your UniFi Dream Machine, Cloud Gateway or Cloud Key to the Wazuh SIEM. Every UniFi CEF key gets decoded into a searchable field, and you get alerts for IPS threats, admin logins, config changes, WAN outages and offline devices.</p>
+    <div class="buttons">
+      <a class="btn primary" href="#install">Install guide</a>
+      <a class="btn" href="https://github.com/evangress/wazuh-unifi-decoder">Decoder on GitHub</a>
+      <a class="btn" href="https://github.com/evangress/wazuh-unifi-rules">Rules on GitHub</a>
+    </div>
+  </div>
+</header>
+
+<nav class="toc"><div class="wrap">
+  <a href="#overview">Overview</a><a href="#install">Install</a><a href="#alerts">Alerts</a><a href="#fields">Decoded fields</a><a href="#testing">Testing</a><a href="#faq">FAQ</a>
+</div></nav>
+
+<main class="wrap">
+<section id="overview">
+  <h2>What you get</h2>
+  <p>UniFi Network can export system logs in <strong>CEF (Common Event Format)</strong> through <em>Integration → System Logging / SIEM</em>. Out of the box, Wazuh doesn't decode them. These two files cover that:</p>
+  <div class="cards">
+    <div class="card">
+      <h3><a href="https://github.com/evangress/wazuh-unifi-decoder">wazuh-unifi-decoder</a></h3>
+      <p><code>ubiquiti_decoders.xml</code> decodes all the publicly documented UniFi CEF keys, plus the undocumented ones that real controllers send, into about 150 fields. It also fills Wazuh's standard <code>srcip</code>, <code>dstip</code> and <code>action</code> fields.</p>
+    </div>
+    <div class="card">
+      <h3><a href="https://github.com/evangress/wazuh-unifi-rules">wazuh-unifi-rules</a></h3>
+      <p><code>ubiquiti_rules.xml</code> has 33 rules (IDs 100010–100399) that turn decoded events into leveled alerts in the <code>unifi</code> group. Routine client connects and roams are stored without alerting.</p>
+    </div>
+  </div>
+  <p><strong>Works with:</strong> UDM, UDM Pro, UDM SE, UDM Pro Max, UCG Ultra / Max / Fiber, Cloud Key Gen2 / Gen2 Plus, UniFi Express and self-hosted UniFi Network. Tested against UniFi Network 10.x and Wazuh 4.14.</p>
+  <p class="note">Plenty of UniFi decoders you'll find online only match lines that start with <code>CEF:</code>. Real UniFi traffic arrives with a syslog header, so Wazuh treats <code>CEF</code> as the program name and those decoders never fire. This decoder handles both forms.</p>
+</section>
+
+<section id="install">
+  <h2>Install on the Wazuh manager</h2>
+  <p>Run these steps on the Wazuh <strong>manager</strong>, as root.</p>
+
+  <h3>1. Download the decoder and rules</h3>
+<pre><code>cd /var/ossec/etc
+curl -fsSL -o decoders/ubiquiti_decoders.xml \
+  https://raw.githubusercontent.com/evangress/wazuh-unifi-decoder/main/ubiquiti_decoders.xml
+curl -fsSL -o rules/ubiquiti_rules.xml \
+  https://raw.githubusercontent.com/evangress/wazuh-unifi-rules/main/ubiquiti_rules.xml
+chown wazuh:wazuh decoders/ubiquiti_decoders.xml rules/ubiquiti_rules.xml
+chmod 660 decoders/ubiquiti_decoders.xml rules/ubiquiti_rules.xml</code></pre>
+  <p>The default <code>ossec.conf</code> already loads every file in <code>etc/decoders</code> and <code>etc/rules</code>. You can also upload both files in the Wazuh dashboard under <em>Server management → Decoders / Rules</em>.</p>
+
+  <h3>2. Accept syslog from the UniFi console</h3>
+  <p>Add a listener inside <code>&lt;ossec_config&gt;</code> in <code>/var/ossec/etc/ossec.conf</code>. Wazuh silently drops syslog from any IP that isn't listed in <code>allowed-ips</code>.</p>
+<pre><code>&lt;remote&gt;
+  &lt;connection&gt;syslog&lt;/connection&gt;
+  &lt;port&gt;514&lt;/port&gt;
+  &lt;protocol&gt;udp&lt;/protocol&gt;
+  &lt;allowed-ips&gt;192.0.2.10&lt;/allowed-ips&gt;  &lt;!-- your UniFi console's IP --&gt;
+&lt;/remote&gt;</code></pre>
+  <p>Open 514/udp in the firewall, for example <code>ufw allow from 192.0.2.10 to any port 514 proto udp</code>.</p>
+
+  <h3>3. Restart and check for errors</h3>
+<pre><code>systemctl restart wazuh-manager
+grep -E 'analysisd.*(ERROR|CRITICAL|WARNING)' /var/ossec/logs/ossec.log | tail</code></pre>
+
+  <h3>4. Verify with wazuh-logtest</h3>
+  <p>Paste this into <code>/var/ossec/bin/wazuh-logtest</code>. You should see decoder <code>ubiquiti</code> and rule <code>100301</code> at level 10.</p>
+<pre><code>Oct 10 16:00:00 unifi CEF:0|Ubiquiti|UniFi Network|10.6.106|512|Device Offline|8|UNIFIcategory=UniFi Devices UNIFIdeviceName=Lobby AP UNIFIdeviceModel=U6-Pro UNIFIdeviceIp=192.0.2.20 msg=Lobby AP went offline.</code></pre>
+
+  <h3>5. Point UniFi at Wazuh</h3>
+  <p>In UniFi Network, open <strong>Integration → System Logging / SIEM</strong>, choose <strong>SIEM Server</strong>, enter the manager's IP and port <strong>514</strong>, and pick the log categories to export. Leave the <em>debug</em> option off. It sends verbose non-CEF logs that include device auth keys.</p>
+</section>
+
+<section id="alerts">
+  <h2>Alerts</h2>
+  <p>Rules match the event names that live controllers actually send, which aren't always the ones in UniFi's docs. Any event without a specific rule falls back to a level based on its CEF severity.</p>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Rule</th><th>Event</th><th>Level</th></tr></thead>
+    <tbody>
+      <tr><td>100100</td><td>Intrusion attempt, high risk</td><td class="lvl">13</td></tr>
+      <tr><td>100105</td><td>IPS: Threat Detected and Blocked</td><td class="lvl">12</td></tr>
+      <tr><td>100310 / 100311</td><td>Internet down / multiple WAN disconnections</td><td class="lvl">12</td></tr>
+      <tr><td>100305</td><td>Multiple devices offline</td><td class="lvl">12</td></tr>
+      <tr><td>100101</td><td>Intrusion attempt</td><td class="lvl">10</td></tr>
+      <tr><td>100102</td><td>Honeypot triggered</td><td class="lvl">10</td></tr>
+      <tr><td>100106</td><td>Rogue AP / WiFi impersonation detected</td><td class="lvl">10</td></tr>
+      <tr><td>100301</td><td>Device offline</td><td class="lvl">10</td></tr>
+      <tr><td>100304</td><td>AP meshed</td><td class="lvl">10</td></tr>
+      <tr><td>100300</td><td>WAN failover</td><td class="lvl">8</td></tr>
+      <tr><td>100204</td><td>Firewall policy created, modified or removed</td><td class="lvl">7</td></tr>
+      <tr><td>100104</td><td>Other security events</td><td class="lvl">7</td></tr>
+      <tr><td>100312</td><td>Temporary internet disconnection</td><td class="lvl">7</td></tr>
+      <tr><td>100200</td><td>Admin accessed UniFi Network</td><td class="lvl">5</td></tr>
+      <tr><td>100201–100203</td><td>Config modified, created, removed</td><td class="lvl">5</td></tr>
+      <tr><td>100313–100315</td><td>Internet restored, high latency, packet loss</td><td class="lvl">5</td></tr>
+      <tr><td>100302 / 100303</td><td>Device firmware / UniFi application updated</td><td class="lvl">5</td></tr>
+      <tr><td>100320 / 100321</td><td>Device adopted / ready for adoption</td><td class="lvl">5</td></tr>
+      <tr><td>100103</td><td>Firewall events</td><td class="lvl">5</td></tr>
+      <tr><td>100390–100392</td><td>Fallback by CEF severity (9–10, 7–8, 4–6)</td><td class="lvl">12 / 10 / 5</td></tr>
+      <tr><td>100010</td><td>Any other UniFi event, including client connect, disconnect and roam</td><td class="lvl">2</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section id="fields">
+  <h2>Decoded fields</h2>
+  <p>Each CEF key gets its own <a href="https://documentation.wazuh.com/current/user-manual/ruleset/decoders/sibling-decoders.html">sibling decoder</a>, so a key that's missing from one message never blocks the others. <code>UNIFIfooBar</code> keys become <code>unifi_foo_bar</code>. Here are some of the most useful ones:</p>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Field</th><th>From</th></tr></thead>
+    <tbody>
+      <tr><td><code>event.name</code>, <code>event.id</code>, <code>event.severity</code></td><td>CEF header</td></tr>
+      <tr><td><code>unifi_category</code>, <code>unifi_sub-category</code></td><td>Security, Audit, Client Devices, UniFi Devices, Internet and WAN, …</td></tr>
+      <tr><td><code>srcip</code>, <code>unifi_client_ip</code>, <code>unifi_client_mac</code>, <code>system_name</code></td><td>Client identity</td></tr>
+      <tr><td><code>dstip</code>, <code>dstport</code>, <code>unifi_connected_to_device_name</code></td><td>The AP or switch a client is attached to</td></tr>
+      <tr><td><code>unifi_admin</code>, <code>unifi_settings_section</code>, <code>unifi_settings_changes</code></td><td>Admin audit trail</td></tr>
+      <tr><td><code>unifi_wan_id</code>, <code>unifi_wan_isp</code>, <code>unifi_wan_latency</code></td><td>WAN health</td></tr>
+      <tr><td><code>unifi_wifi_name</code>, <code>unifi_wifi_rssi</code>, <code>unifi_bssid</code></td><td>Wireless details</td></tr>
+      <tr><td><code>unifi_device_name</code>, <code>unifi_device_model</code>, <code>unifi_device_version</code></td><td>UniFi hardware</td></tr>
+      <tr><td><code>action</code></td><td>The human-readable <code>msg</code></td></tr>
+    </tbody>
+  </table></div>
+  <p>The full list is in <a href="https://github.com/evangress/wazuh-unifi-decoder/blob/main/ubiquiti_decoders.xml">ubiquiti_decoders.xml</a>.</p>
+</section>
+
+<section id="testing">
+  <h2>Testing</h2>
+  <p>The decoder repo includes a throwaway Docker lab that runs a Wazuh manager and mounts both repos, plus <code>samples/events.log</code>: anonymized real UniFi events, each annotated with the decoder, rule, level and fields it should produce.</p>
+<pre><code>git clone https://github.com/evangress/wazuh-unifi-decoder
+git clone https://github.com/evangress/wazuh-unifi-rules
+cd wazuh-unifi-decoder
+docker compose -f lab/docker-compose.yml up -d
+./test.py
+docker compose -f lab/docker-compose.yml down -v</code></pre>
+  <p>You can also point a live controller at the lab. See <a href="https://github.com/evangress/wazuh-unifi-decoder/blob/main/lab/README.md">lab/README.md</a>.</p>
+</section>
+
+<section id="faq">
+  <h2>FAQ and troubleshooting</h2>
+  <details><summary>Nothing arrives in Wazuh</summary>
+    <p>Check that the console's IP is listed in <code>allowed-ips</code> and that 514/udp is open. Run <code>tcpdump -ni any udp port 514</code> on the manager to see whether packets reach it at all.</p></details>
+  <details><summary>Events arrive but don't decode or alert</summary>
+    <p>Set <code>&lt;logall_json&gt;yes&lt;/logall_json&gt;</code> temporarily and look at <code>/var/ossec/logs/archives/archives.json</code>. If <code>"decoder"</code> is empty, the decoder isn't installed, or it's an older version that only matches bare <code>CEF:</code> lines.</p></details>
+  <details><summary>My custom rules already use IDs 100010–100399</summary>
+    <p>Renumber one of the two rule sets so the IDs don't overlap. Wazuh logs a warning for duplicate rule IDs.</p></details>
+  <details><summary>An event type isn't decoded or has no specific rule</summary>
+    <p>Open an issue or pull request with an anonymized sample line. UniFi's real output differs from its documentation, so live samples are the most useful contribution.</p></details>
+</section>
+</main>
+
+<footer><div class="wrap">
+  MIT licensed. Maintained by <a href="https://github.com/evangress">Evan Gress</a>. The decoder started as a fork of <a href="https://github.com/EvilForge/wazuh-unifi-decoder">EvilForge/wazuh-unifi-decoder</a>.
+  Not affiliated with Ubiquiti Inc. or Wazuh Inc. UniFi is a trademark of Ubiquiti Inc.
+</div></footer>
+</body>
+</html>

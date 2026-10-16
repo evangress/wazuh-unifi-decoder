@@ -18,6 +18,10 @@ A single Wazuh decoder file, `ubiquiti_decoders.xml`, that parses UniFi CEF sysl
 
 Note: `.gitignore` contains `*/`, which ignores **every subdirectory**. If you add folders such as `rules/` or sample logs, git will skip them until you change `.gitignore`.
 
+## Docs site
+
+`docs/index.html` is a hand-written GitHub Pages site (https://evangress.github.io/wazuh-unifi-decoder/) covering both this repo and the rules repo: install guide, alert table, field list and FAQ. Update it when install steps, rule IDs/levels or notable fields change. It's plain HTML with no build step (`docs/.nojekyll`).
+
 ## Decoder architecture
 
 The file uses Wazuh's [sibling decoder](https://documentation.wazuh.com/current/user-manual/ruleset/decoders/sibling-decoders.html) pattern:

@@ -2,6 +2,8 @@
 */
 !samples/
 !lab/
+!docs/
+!.github/
 
 ### IntelliJ IDEA ###
 out/
