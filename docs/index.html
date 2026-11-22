@@ -133,7 +133,7 @@ footer { margin-top: 48px; padding: 24px 0 48px; border-top: 1px solid var(--bor
     </div>
     <div class="card">
       <h3><a href="https://github.com/evangress/wazuh-unifi-rules">wazuh-unifi-rules</a></h3>
-      <p><code>ubiquiti_rules.xml</code> has 33 rules (IDs 100010–100399) that turn decoded events into leveled alerts in the <code>unifi</code> group. Routine client connects and roams are stored without alerting.</p>
+      <p><code>ubiquiti_rules.xml</code> has 42 rules (IDs 100010–100399) that turn decoded events into leveled alerts in the <code>unifi</code> group. Routine client connects and roams are stored without alerting.</p>
     </div>
   </div>
   <p><strong>Works with:</strong> UDM, UDM Pro, UDM SE, UDM Pro Max, UCG Ultra / Max / Fiber, Cloud Key Gen2 / Gen2 Plus, UniFi Express and self-hosted UniFi Network. Tested against UniFi Network 10.x and Wazuh 4.14.</p>
@@ -192,6 +192,7 @@ grep -E 'analysisd.*(ERROR|CRITICAL|WARNING)' /var/ossec/logs/ossec.log | tail</
       <tr><td>100301</td><td>Device offline</td><td class="lvl">10</td></tr>
       <tr><td>100304</td><td>AP meshed</td><td class="lvl">10</td></tr>
       <tr><td>100300</td><td>WAN failover</td><td class="lvl">8</td></tr>
+      <tr><td>100113</td><td>DNS: 30 content-filter blocks for one client in 10 minutes</td><td class="lvl">8</td></tr>
       <tr><td>100204</td><td>Firewall policy created, modified or removed</td><td class="lvl">7</td></tr>
       <tr><td>100104</td><td>Other security events</td><td class="lvl">7</td></tr>
       <tr><td>100312</td><td>Temporary internet disconnection</td><td class="lvl">7</td></tr>
@@ -202,7 +203,11 @@ grep -E 'analysisd.*(ERROR|CRITICAL|WARNING)' /var/ossec/logs/ossec.log | tail</
       <tr><td>100320 / 100321</td><td>Device adopted / ready for adoption</td><td class="lvl">5</td></tr>
       <tr><td>100103</td><td>Firewall events</td><td class="lvl">5</td></tr>
       <tr><td>100390–100392</td><td>Fallback by CEF severity (9–10, 7–8, 4–6)</td><td class="lvl">12 / 10 / 5</td></tr>
+      <tr><td>100112</td><td>DNS: content-filter block</td><td class="lvl">3</td></tr>
       <tr><td>100010</td><td>Any other UniFi event, including client connect, disconnect and roam</td><td class="lvl">2</td></tr>
+      <tr><td>100110 / 100111</td><td>DNS: any filtering event / ad domain blocked (device syslog)</td><td class="lvl">2</td></tr>
+      <tr><td>100331</td><td>DHCP lease granted (device syslog)</td><td class="lvl">2</td></tr>
+      <tr><td>100330, 100332–100334</td><td>Other DHCP messages, gateway and device debug syslog (decoded, never alerted)</td><td class="lvl">0</td></tr>
     </tbody>
   </table></div>
 </section>
@@ -222,6 +227,8 @@ grep -E 'analysisd.*(ERROR|CRITICAL|WARNING)' /var/ossec/logs/ossec.log | tail</
       <tr><td><code>unifi_wifi_name</code>, <code>unifi_wifi_rssi</code>, <code>unifi_bssid</code></td><td>Wireless details</td></tr>
       <tr><td><code>unifi_device_name</code>, <code>unifi_device_model</code>, <code>unifi_device_version</code></td><td>UniFi hardware</td></tr>
       <tr><td><code>action</code></td><td>The human-readable <code>msg</code></td></tr>
+      <tr><td><code>unifi_dns_type</code>, <code>unifi_dns_category</code>, <code>unifi_dns_domain</code></td><td>Gateway DNS filtering (<code>ubiquiti-coredns</code>, device syslog)</td></tr>
+      <tr><td><code>unifi_dhcp_message</code>, <code>unifi_client_hostname</code></td><td>Gateway DHCP (<code>ubiquiti-dhcp</code>, device syslog)</td></tr>
     </tbody>
   </table></div>
   <p>The full list is in <a href="https://github.com/evangress/wazuh-unifi-decoder/blob/main/ubiquiti_decoders.xml">ubiquiti_decoders.xml</a>.</p>

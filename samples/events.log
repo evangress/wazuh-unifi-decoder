@@ -123,3 +123,97 @@ Oct 10 15:54:42 USW-Pro-8 020000000009,USW-Pro-8-PoE-7.6.5+17224: syswrapper[524
 # Unrelated syslog must keep its own decoder.
 # expect: decoder=sshd
 Oct 10 16:00:00 myhost sshd[1]: Accepted password for root from 198.51.100.8 port 22 ssh2
+
+# --- synthetic: device syslog (not CEF), shapes taken from live UniFi Network 10.x / UniFi OS output, values anonymized ---
+# Gateway DNS filtering: the gateway repeats its hostname in the syslog header.
+# expect: decoder=ubiquiti-coredns rule=100111 level=2 fields=unifi_dns_type,unifi_dns_category,unifi_dns_domain,unifi_client_ip,unifi_client_mac,srcip,srcport,dstip,dstport,protocol,unifi_dns_time,unifi_dns_unix_ms
+Nov 22 10:41:54 GW-Name GW-Name coredns[4386]: {"timestamp":"2026-11-22T10:41:54-05:00","unix_milli_timestamp":1795372914499,"type":"dnsAdBlock","category":"ADVERTISEMENT","domain":"ads.example.com","ip":"192.0.2.44","mac":"02:00:00:00:00:09","src_ip":"192.0.2.44","src_port":32447,"dst_ip":"127.0.0.1","dst_port":1053,"protocol":"udp"}
+# expect: decoder=ubiquiti-coredns rule=100112 level=3 fields=unifi_dns_type,unifi_dns_category,unifi_dns_domain,srcip
+Nov 22 10:42:08 GW-Name GW-Name coredns[4386]: {"timestamp":"2026-11-22T10:42:08-05:00","unix_milli_timestamp":1795372928243,"type":"contentFilteringBlock","category":"IT_SERVICES","domain":"blocked.example.net","ip":"192.0.2.45","mac":"02:00:00:00:00:0a","src_ip":"192.0.2.45","src_port":10429,"dst_ip":"127.0.0.1","dst_port":1053,"protocol":"tcp"}
+# Same event with a normal one-hostname header (program name parsed).
+# expect: decoder=ubiquiti-coredns rule=100111 level=2 fields=unifi_dns_type,unifi_dns_domain,srcip
+Nov 22 10:43:00 GW-Name coredns[4386]: {"timestamp":"2026-11-22T10:43:00-05:00","unix_milli_timestamp":1795372980000,"type":"dnsAdBlock","category":"ADVERTISEMENT","domain":"tracker.example.org","ip":"192.0.2.46","mac":"02:00:00:00:00:0b","src_ip":"192.0.2.46","src_port":40001,"dst_ip":"127.0.0.1","dst_port":1053,"protocol":"udp"}
+# Gateway DHCP (dnsmasq).
+# expect: decoder=ubiquiti-dhcp rule=100331 level=2 fields=unifi_dhcp_message,unifi_dhcp_interface,srcip,unifi_client_mac,unifi_client_hostname
+Nov 22 10:44:00 GW-Name dnsmasq-dhcp[446231]: DHCPACK(br0) 192.0.2.47 02:00:00:00:00:0c Phone-02
+# expect: decoder=ubiquiti-dhcp rule=100330 level=0 fields=unifi_dhcp_message,unifi_dhcp_interface,unifi_client_mac
+Nov 22 10:44:00 GW-Name dnsmasq-dhcp[446231]: DHCPDISCOVER(br0) 02:00:00:00:00:0c
+# expect: decoder=ubiquiti-dhcp rule=100330 level=0 fields=unifi_dhcp_message,srcip,unifi_client_mac
+Nov 22 10:44:00 GW-Name dnsmasq-dhcp[446231]: DHCPOFFER(br0) 192.0.2.47 02:00:00:00:00:0c
+# Gateway daemons (debug output).
+# expect: decoder=ubiquiti-syslog rule=100332 level=0
+Nov 22 10:45:48 GW-Name ubios-udapi-server[1626]: svc-utm-service:                +(services):    Keep running service utm
+# expect: decoder=ubiquiti-syslog rule=100332 level=0
+Nov 22 10:45:49 GW-Name mcad[2201]: ace_reporter.reporter_save_config(): is_setup_completed: true
+# expect: decoder=ubiquiti-syslog rule=100332 level=0
+Nov 22 10:47:10 GW-Name ubnt-idsips-daemon[3310]: 2026-11-22T10:47:10.120-05:00	Info: Subscription is active: true
+# Access point debug output: MAC and model/firmware where the program name would be. The stock
+# symantec-av decoder takes these first; rule 100334 relabels them at level 0.
+# expect: decoder=symantec-av rule=100334 level=0
+Nov 22 10:46:52 AP-Name 020000000001,U6-Mesh-8.8.14+20179: hostapd[5282]: wifi0ap0: STA 02:00:00:00:00:0d WPA: UBNT_ROAM received: STA roamed to peer AP 02:00:00:00:00:0e
+# expect: decoder=symantec-av rule=100334 level=0
+Nov 22 10:46:54 AP-Name 020000000001,U6-Mesh-8.8.14+20179: kernel: wlan: [0:I:ANY] [UNSPECIFIED] vap-1(wifi0ap1): [02:00:00:00:00:0d]recv auth frame with algorithm 0 seq 1 rssi:58 minrssi:0
+# Switch output sent without a syslog timestamp.
+# expect: decoder=ubiquiti-device rule=100333 level=0 fields=unifi_device_mac,unifi_device_firmware,unifi_device_process
+Switch-Name 020000000002,USW_FLEX_MINI-2.1.6.762: INF-DB: Send normal inform to [http://192.0.2.30:8080/inform] aes_gcm 1 Time 6208529
+# Content-filter burst: 30 blocks for one client within 10 minutes; the 30th raises 100113 (frequency rule).
+# expect: decoder=ubiquiti-coredns rule=100112 level=3
+Nov 22 10:50:01 GW-Name GW-Name coredns[4386]: {"timestamp":"2026-11-22T10:50:01-05:00","unix_milli_timestamp":1795373401000,"type":"contentFilteringBlock","category":"IT_SERVICES","domain":"blocked.example.net","ip":"198.51.100.77","mac":"02:00:00:00:00:0f","src_ip":"198.51.100.77","src_port":10001,"dst_ip":"127.0.0.1","dst_port":1053,"protocol":"udp"}
+# expect: decoder=ubiquiti-coredns rule=100112 level=3
+Nov 22 10:50:02 GW-Name GW-Name coredns[4386]: {"timestamp":"2026-11-22T10:50:02-05:00","unix_milli_timestamp":1795373402000,"type":"contentFilteringBlock","category":"IT_SERVICES","domain":"blocked.example.net","ip":"198.51.100.77","mac":"02:00:00:00:00:0f","src_ip":"198.51.100.77","src_port":10002,"dst_ip":"127.0.0.1","dst_port":1053,"protocol":"udp"}
+# expect: decoder=ubiquiti-coredns rule=100112 level=3
+Nov 22 10:50:03 GW-Name GW-Name coredns[4386]: {"timestamp":"2026-11-22T10:50:03-05:00","unix_milli_timestamp":1795373403000,"type":"contentFilteringBlock","category":"IT_SERVICES","domain":"blocked.example.net","ip":"198.51.100.77","mac":"02:00:00:00:00:0f","src_ip":"198.51.100.77","src_port":10003,"dst_ip":"127.0.0.1","dst_port":1053,"protocol":"udp"}
+# expect: decoder=ubiquiti-coredns rule=100112 level=3
+Nov 22 10:50:04 GW-Name GW-Name coredns[4386]: {"timestamp":"2026-11-22T10:50:04-05:00","unix_milli_timestamp":1795373404000,"type":"contentFilteringBlock","category":"IT_SERVICES","domain":"blocked.example.net","ip":"198.51.100.77","mac":"02:00:00:00:00:0f","src_ip":"198.51.100.77","src_port":10004,"dst_ip":"127.0.0.1","dst_port":1053,"protocol":"udp"}
+# expect: decoder=ubiquiti-coredns rule=100112 level=3
+Nov 22 10:50:05 GW-Name GW-Name coredns[4386]: {"timestamp":"2026-11-22T10:50:05-05:00","unix_milli_timestamp":1795373405000,"type":"contentFilteringBlock","category":"IT_SERVICES","domain":"blocked.example.net","ip":"198.51.100.77","mac":"02:00:00:00:00:0f","src_ip":"198.51.100.77","src_port":10005,"dst_ip":"127.0.0.1","dst_port":1053,"protocol":"udp"}
+# expect: decoder=ubiquiti-coredns rule=100112 level=3
+Nov 22 10:50:06 GW-Name GW-Name coredns[4386]: {"timestamp":"2026-11-22T10:50:06-05:00","unix_milli_timestamp":1795373406000,"type":"contentFilteringBlock","category":"IT_SERVICES","domain":"blocked.example.net","ip":"198.51.100.77","mac":"02:00:00:00:00:0f","src_ip":"198.51.100.77","src_port":10006,"dst_ip":"127.0.0.1","dst_port":1053,"protocol":"udp"}
+# expect: decoder=ubiquiti-coredns rule=100112 level=3
+Nov 22 10:50:07 GW-Name GW-Name coredns[4386]: {"timestamp":"2026-11-22T10:50:07-05:00","unix_milli_timestamp":1795373407000,"type":"contentFilteringBlock","category":"IT_SERVICES","domain":"blocked.example.net","ip":"198.51.100.77","mac":"02:00:00:00:00:0f","src_ip":"198.51.100.77","src_port":10007,"dst_ip":"127.0.0.1","dst_port":1053,"protocol":"udp"}
+# expect: decoder=ubiquiti-coredns rule=100112 level=3
+Nov 22 10:50:08 GW-Name GW-Name coredns[4386]: {"timestamp":"2026-11-22T10:50:08-05:00","unix_milli_timestamp":1795373408000,"type":"contentFilteringBlock","category":"IT_SERVICES","domain":"blocked.example.net","ip":"198.51.100.77","mac":"02:00:00:00:00:0f","src_ip":"198.51.100.77","src_port":10008,"dst_ip":"127.0.0.1","dst_port":1053,"protocol":"udp"}
+# expect: decoder=ubiquiti-coredns rule=100112 level=3
+Nov 22 10:50:09 GW-Name GW-Name coredns[4386]: {"timestamp":"2026-11-22T10:50:09-05:00","unix_milli_timestamp":1795373409000,"type":"contentFilteringBlock","category":"IT_SERVICES","domain":"blocked.example.net","ip":"198.51.100.77","mac":"02:00:00:00:00:0f","src_ip":"198.51.100.77","src_port":10009,"dst_ip":"127.0.0.1","dst_port":1053,"protocol":"udp"}
+# expect: decoder=ubiquiti-coredns rule=100112 level=3
+Nov 22 10:50:10 GW-Name GW-Name coredns[4386]: {"timestamp":"2026-11-22T10:50:10-05:00","unix_milli_timestamp":1795373410000,"type":"contentFilteringBlock","category":"IT_SERVICES","domain":"blocked.example.net","ip":"198.51.100.77","mac":"02:00:00:00:00:0f","src_ip":"198.51.100.77","src_port":10010,"dst_ip":"127.0.0.1","dst_port":1053,"protocol":"udp"}
+# expect: decoder=ubiquiti-coredns rule=100112 level=3
+Nov 22 10:50:11 GW-Name GW-Name coredns[4386]: {"timestamp":"2026-11-22T10:50:11-05:00","unix_milli_timestamp":1795373411000,"type":"contentFilteringBlock","category":"IT_SERVICES","domain":"blocked.example.net","ip":"198.51.100.77","mac":"02:00:00:00:00:0f","src_ip":"198.51.100.77","src_port":10011,"dst_ip":"127.0.0.1","dst_port":1053,"protocol":"udp"}
+# expect: decoder=ubiquiti-coredns rule=100112 level=3
+Nov 22 10:50:12 GW-Name GW-Name coredns[4386]: {"timestamp":"2026-11-22T10:50:12-05:00","unix_milli_timestamp":1795373412000,"type":"contentFilteringBlock","category":"IT_SERVICES","domain":"blocked.example.net","ip":"198.51.100.77","mac":"02:00:00:00:00:0f","src_ip":"198.51.100.77","src_port":10012,"dst_ip":"127.0.0.1","dst_port":1053,"protocol":"udp"}
+# expect: decoder=ubiquiti-coredns rule=100112 level=3
+Nov 22 10:50:13 GW-Name GW-Name coredns[4386]: {"timestamp":"2026-11-22T10:50:13-05:00","unix_milli_timestamp":1795373413000,"type":"contentFilteringBlock","category":"IT_SERVICES","domain":"blocked.example.net","ip":"198.51.100.77","mac":"02:00:00:00:00:0f","src_ip":"198.51.100.77","src_port":10013,"dst_ip":"127.0.0.1","dst_port":1053,"protocol":"udp"}
+# expect: decoder=ubiquiti-coredns rule=100112 level=3
+Nov 22 10:50:14 GW-Name GW-Name coredns[4386]: {"timestamp":"2026-11-22T10:50:14-05:00","unix_milli_timestamp":1795373414000,"type":"contentFilteringBlock","category":"IT_SERVICES","domain":"blocked.example.net","ip":"198.51.100.77","mac":"02:00:00:00:00:0f","src_ip":"198.51.100.77","src_port":10014,"dst_ip":"127.0.0.1","dst_port":1053,"protocol":"udp"}
+# expect: decoder=ubiquiti-coredns rule=100112 level=3
+Nov 22 10:50:15 GW-Name GW-Name coredns[4386]: {"timestamp":"2026-11-22T10:50:15-05:00","unix_milli_timestamp":1795373415000,"type":"contentFilteringBlock","category":"IT_SERVICES","domain":"blocked.example.net","ip":"198.51.100.77","mac":"02:00:00:00:00:0f","src_ip":"198.51.100.77","src_port":10015,"dst_ip":"127.0.0.1","dst_port":1053,"protocol":"udp"}
+# expect: decoder=ubiquiti-coredns rule=100112 level=3
+Nov 22 10:50:16 GW-Name GW-Name coredns[4386]: {"timestamp":"2026-11-22T10:50:16-05:00","unix_milli_timestamp":1795373416000,"type":"contentFilteringBlock","category":"IT_SERVICES","domain":"blocked.example.net","ip":"198.51.100.77","mac":"02:00:00:00:00:0f","src_ip":"198.51.100.77","src_port":10016,"dst_ip":"127.0.0.1","dst_port":1053,"protocol":"udp"}
+# expect: decoder=ubiquiti-coredns rule=100112 level=3
+Nov 22 10:50:17 GW-Name GW-Name coredns[4386]: {"timestamp":"2026-11-22T10:50:17-05:00","unix_milli_timestamp":1795373417000,"type":"contentFilteringBlock","category":"IT_SERVICES","domain":"blocked.example.net","ip":"198.51.100.77","mac":"02:00:00:00:00:0f","src_ip":"198.51.100.77","src_port":10017,"dst_ip":"127.0.0.1","dst_port":1053,"protocol":"udp"}
+# expect: decoder=ubiquiti-coredns rule=100112 level=3
+Nov 22 10:50:18 GW-Name GW-Name coredns[4386]: {"timestamp":"2026-11-22T10:50:18-05:00","unix_milli_timestamp":1795373418000,"type":"contentFilteringBlock","category":"IT_SERVICES","domain":"blocked.example.net","ip":"198.51.100.77","mac":"02:00:00:00:00:0f","src_ip":"198.51.100.77","src_port":10018,"dst_ip":"127.0.0.1","dst_port":1053,"protocol":"udp"}
+# expect: decoder=ubiquiti-coredns rule=100112 level=3
+Nov 22 10:50:19 GW-Name GW-Name coredns[4386]: {"timestamp":"2026-11-22T10:50:19-05:00","unix_milli_timestamp":1795373419000,"type":"contentFilteringBlock","category":"IT_SERVICES","domain":"blocked.example.net","ip":"198.51.100.77","mac":"02:00:00:00:00:0f","src_ip":"198.51.100.77","src_port":10019,"dst_ip":"127.0.0.1","dst_port":1053,"protocol":"udp"}
+# expect: decoder=ubiquiti-coredns rule=100112 level=3
+Nov 22 10:50:20 GW-Name GW-Name coredns[4386]: {"timestamp":"2026-11-22T10:50:20-05:00","unix_milli_timestamp":1795373420000,"type":"contentFilteringBlock","category":"IT_SERVICES","domain":"blocked.example.net","ip":"198.51.100.77","mac":"02:00:00:00:00:0f","src_ip":"198.51.100.77","src_port":10020,"dst_ip":"127.0.0.1","dst_port":1053,"protocol":"udp"}
+# expect: decoder=ubiquiti-coredns rule=100112 level=3
+Nov 22 10:50:21 GW-Name GW-Name coredns[4386]: {"timestamp":"2026-11-22T10:50:21-05:00","unix_milli_timestamp":1795373421000,"type":"contentFilteringBlock","category":"IT_SERVICES","domain":"blocked.example.net","ip":"198.51.100.77","mac":"02:00:00:00:00:0f","src_ip":"198.51.100.77","src_port":10021,"dst_ip":"127.0.0.1","dst_port":1053,"protocol":"udp"}
+# expect: decoder=ubiquiti-coredns rule=100112 level=3
+Nov 22 10:50:22 GW-Name GW-Name coredns[4386]: {"timestamp":"2026-11-22T10:50:22-05:00","unix_milli_timestamp":1795373422000,"type":"contentFilteringBlock","category":"IT_SERVICES","domain":"blocked.example.net","ip":"198.51.100.77","mac":"02:00:00:00:00:0f","src_ip":"198.51.100.77","src_port":10022,"dst_ip":"127.0.0.1","dst_port":1053,"protocol":"udp"}
+# expect: decoder=ubiquiti-coredns rule=100112 level=3
+Nov 22 10:50:23 GW-Name GW-Name coredns[4386]: {"timestamp":"2026-11-22T10:50:23-05:00","unix_milli_timestamp":1795373423000,"type":"contentFilteringBlock","category":"IT_SERVICES","domain":"blocked.example.net","ip":"198.51.100.77","mac":"02:00:00:00:00:0f","src_ip":"198.51.100.77","src_port":10023,"dst_ip":"127.0.0.1","dst_port":1053,"protocol":"udp"}
+# expect: decoder=ubiquiti-coredns rule=100112 level=3
+Nov 22 10:50:24 GW-Name GW-Name coredns[4386]: {"timestamp":"2026-11-22T10:50:24-05:00","unix_milli_timestamp":1795373424000,"type":"contentFilteringBlock","category":"IT_SERVICES","domain":"blocked.example.net","ip":"198.51.100.77","mac":"02:00:00:00:00:0f","src_ip":"198.51.100.77","src_port":10024,"dst_ip":"127.0.0.1","dst_port":1053,"protocol":"udp"}
+# expect: decoder=ubiquiti-coredns rule=100112 level=3
+Nov 22 10:50:25 GW-Name GW-Name coredns[4386]: {"timestamp":"2026-11-22T10:50:25-05:00","unix_milli_timestamp":1795373425000,"type":"contentFilteringBlock","category":"IT_SERVICES","domain":"blocked.example.net","ip":"198.51.100.77","mac":"02:00:00:00:00:0f","src_ip":"198.51.100.77","src_port":10025,"dst_ip":"127.0.0.1","dst_port":1053,"protocol":"udp"}
+# expect: decoder=ubiquiti-coredns rule=100112 level=3
+Nov 22 10:50:26 GW-Name GW-Name coredns[4386]: {"timestamp":"2026-11-22T10:50:26-05:00","unix_milli_timestamp":1795373426000,"type":"contentFilteringBlock","category":"IT_SERVICES","domain":"blocked.example.net","ip":"198.51.100.77","mac":"02:00:00:00:00:0f","src_ip":"198.51.100.77","src_port":10026,"dst_ip":"127.0.0.1","dst_port":1053,"protocol":"udp"}
+# expect: decoder=ubiquiti-coredns rule=100112 level=3
+Nov 22 10:50:27 GW-Name GW-Name coredns[4386]: {"timestamp":"2026-11-22T10:50:27-05:00","unix_milli_timestamp":1795373427000,"type":"contentFilteringBlock","category":"IT_SERVICES","domain":"blocked.example.net","ip":"198.51.100.77","mac":"02:00:00:00:00:0f","src_ip":"198.51.100.77","src_port":10027,"dst_ip":"127.0.0.1","dst_port":1053,"protocol":"udp"}
+# expect: decoder=ubiquiti-coredns rule=100112 level=3
+Nov 22 10:50:28 GW-Name GW-Name coredns[4386]: {"timestamp":"2026-11-22T10:50:28-05:00","unix_milli_timestamp":1795373428000,"type":"contentFilteringBlock","category":"IT_SERVICES","domain":"blocked.example.net","ip":"198.51.100.77","mac":"02:00:00:00:00:0f","src_ip":"198.51.100.77","src_port":10028,"dst_ip":"127.0.0.1","dst_port":1053,"protocol":"udp"}
+# expect: decoder=ubiquiti-coredns rule=100112 level=3
+Nov 22 10:50:29 GW-Name GW-Name coredns[4386]: {"timestamp":"2026-11-22T10:50:29-05:00","unix_milli_timestamp":1795373429000,"type":"contentFilteringBlock","category":"IT_SERVICES","domain":"blocked.example.net","ip":"198.51.100.77","mac":"02:00:00:00:00:0f","src_ip":"198.51.100.77","src_port":10029,"dst_ip":"127.0.0.1","dst_port":1053,"protocol":"udp"}
+# expect: decoder=ubiquiti-coredns rule=100113 level=8 fields=srcip
+Nov 22 10:50:30 GW-Name GW-Name coredns[4386]: {"timestamp":"2026-11-22T10:50:30-05:00","unix_milli_timestamp":1795373430000,"type":"contentFilteringBlock","category":"IT_SERVICES","domain":"blocked.example.net","ip":"198.51.100.77","mac":"02:00:00:00:00:0f","src_ip":"198.51.100.77","src_port":10030,"dst_ip":"127.0.0.1","dst_port":1053,"protocol":"udp"}

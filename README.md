@@ -20,6 +20,22 @@ For alerts, install the companion rule set **[wazuh-unifi-rules](https://github.
 
 Every key has its own sibling decoder, so a key missing from one event never stops the others from being decoded.
 
+### Device syslog (not CEF)
+
+With SIEM logging on, UniFi devices also send plain syslog. Four more decoders cover it:
+
+| Decoder | Lines | Fields |
+|---|---|---|
+| `ubiquiti-coredns` | Gateway DNS filtering (`coredns`): ad blocks and content-filter blocks, one JSON object per line | `unifi_dns_type`, `unifi_dns_category`, `unifi_dns_domain`, `unifi_client_ip`, `unifi_client_mac`, `unifi_dns_time`, `unifi_dns_unix_ms`, plus `srcip`, `srcport`, `dstip`, `dstport`, `protocol` |
+| `ubiquiti-dhcp` | Gateway DHCP (`dnsmasq-dhcp`) | `unifi_dhcp_message`, `unifi_dhcp_interface`, `srcip`, `unifi_client_mac`, `unifi_client_hostname` |
+| `ubiquiti-syslog` | Gateway daemons such as `ubios-udapi-server` and `mcad` (status and provisioning output) | none |
+| `ubiquiti-device` | Switch output sent without a syslog timestamp (`<host> <mac>,<model-firmware>: <process>: …`) | `unifi_device_mac`, `unifi_device_firmware`, `unifi_device_process` |
+
+Two quirks, both checked with `wazuh-logtest` on Wazuh 4.14.10:
+
+- The gateway writes its hostname twice in the syslog header (`<time> GW-Name GW-Name coredns[n]: {…}`). Wazuh's pre-decoder then finds no program name, so `ubiquiti-coredns` has one parent for that form and one for a normal `coredns[n]:` header.
+- Access points and switches put `<mac>,<model-firmware>:` where the program name would be. With a timestamp, Wazuh's stock `symantec-av` decoder (which looks for twelve word characters and a comma) takes these lines before any custom decoder can. A custom child of `symantec-av` would catch them, but it stops `symantec-av` from decoding real Symantec logs, so this repo leaves the decoder alone; rule 100334 in the rules repo labels these lines instead.
+
 ## Installation
 
 Tested on Wazuh 4.14.8 with UniFi Network 10.x. Run on the Wazuh **manager**, as root:
