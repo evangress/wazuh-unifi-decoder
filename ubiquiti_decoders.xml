@@ -959,3 +959,168 @@
 	<regex type="pcre2">\bUNIFIwanSubnet=(\S.*?)(?=\s+[A-Za-z][A-Za-z0-9_]*=|\s*$)</regex>
 	<order>unifi_wan_subnet</order>
 </decoder>
+
+<!--
+  ======================================================================
+  UniFi device syslog (not CEF): what gateways, access points and switches
+  send when SIEM logging (and optionally debug logging) is on.
+  These decoders have their own names, so they never take part in the
+  "ubiquiti" CEF sibling chain above.
+  ======================================================================
+-->
+
+<!--
+  ubiquiti-coredns: gateway DNS filtering events (ad blocking and content
+  filtering). The gateway repeats its hostname in the syslog header:
+    Nov 22 10:00:00 GW-Name GW-Name coredns[4386]: {"timestamp":...}
+  The pre-decoder takes the first copy as the hostname, cannot parse a
+  program name from the second, and leaves "GW-Name coredns[4386]: {...}"
+  as the message with no program name. The first parent covers that form;
+  the second covers a normal "host coredns[pid]: {...}" header. Each JSON
+  key has its own sibling decoder, like the CEF keys above.
+-->
+<decoder name="ubiquiti-coredns">
+	<prematch type="pcre2">^\S+ coredns\[\d+\]: \{</prematch>
+</decoder>
+
+<decoder name="ubiquiti-coredns">
+	<program_name>^coredns$</program_name>
+	<prematch type="pcre2">^\{"timestamp"</prematch>
+</decoder>
+
+<decoder name="ubiquiti-coredns">
+	<parent>ubiquiti-coredns</parent>
+	<regex type="pcre2">"type":"([^"]*)"</regex>
+	<order>unifi_dns_type</order>
+</decoder>
+
+<decoder name="ubiquiti-coredns">
+	<parent>ubiquiti-coredns</parent>
+	<regex type="pcre2">"category":"([^"]*)"</regex>
+	<order>unifi_dns_category</order>
+</decoder>
+
+<decoder name="ubiquiti-coredns">
+	<parent>ubiquiti-coredns</parent>
+	<regex type="pcre2">"domain":"([^"]*)"</regex>
+	<order>unifi_dns_domain</order>
+</decoder>
+
+<decoder name="ubiquiti-coredns">
+	<parent>ubiquiti-coredns</parent>
+	<regex type="pcre2">"ip":"([^"]*)"</regex>
+	<order>unifi_client_ip</order>
+</decoder>
+
+<decoder name="ubiquiti-coredns">
+	<parent>ubiquiti-coredns</parent>
+	<regex type="pcre2">"mac":"([^"]*)"</regex>
+	<order>unifi_client_mac</order>
+</decoder>
+
+<!-- Standard Wazuh fields: srcip, srcport, dstip, dstport, protocol -->
+<decoder name="ubiquiti-coredns">
+	<parent>ubiquiti-coredns</parent>
+	<regex type="pcre2">"src_ip":"([^"]*)"</regex>
+	<order>srcip</order>
+</decoder>
+
+<decoder name="ubiquiti-coredns">
+	<parent>ubiquiti-coredns</parent>
+	<regex type="pcre2">"src_port":(\d+)</regex>
+	<order>srcport</order>
+</decoder>
+
+<decoder name="ubiquiti-coredns">
+	<parent>ubiquiti-coredns</parent>
+	<regex type="pcre2">"dst_ip":"([^"]*)"</regex>
+	<order>dstip</order>
+</decoder>
+
+<decoder name="ubiquiti-coredns">
+	<parent>ubiquiti-coredns</parent>
+	<regex type="pcre2">"dst_port":(\d+)</regex>
+	<order>dstport</order>
+</decoder>
+
+<decoder name="ubiquiti-coredns">
+	<parent>ubiquiti-coredns</parent>
+	<regex type="pcre2">"protocol":"([^"]*)"</regex>
+	<order>protocol</order>
+</decoder>
+
+<decoder name="ubiquiti-coredns">
+	<parent>ubiquiti-coredns</parent>
+	<regex type="pcre2">"timestamp":"([^"]*)"</regex>
+	<order>unifi_dns_time</order>
+</decoder>
+
+<decoder name="ubiquiti-coredns">
+	<parent>ubiquiti-coredns</parent>
+	<regex type="pcre2">"unix_milli_timestamp":(\d+)</regex>
+	<order>unifi_dns_unix_ms</order>
+</decoder>
+
+<!--
+  ubiquiti-dhcp: DHCP messages from the gateway's dnsmasq, e.g.
+    Nov 22 10:00:00 GW-Name dnsmasq-dhcp[446231]: DHCPACK(br0) 192.0.2.10 02:00:00:00:00:09 Phone-01
+-->
+<decoder name="ubiquiti-dhcp">
+	<program_name>^dnsmasq-dhcp$</program_name>
+</decoder>
+
+<decoder name="ubiquiti-dhcp">
+	<parent>ubiquiti-dhcp</parent>
+	<regex type="pcre2">^(DHCP[A-Z]+)\(([^)]*)\)</regex>
+	<order>unifi_dhcp_message, unifi_dhcp_interface</order>
+</decoder>
+
+<decoder name="ubiquiti-dhcp">
+	<parent>ubiquiti-dhcp</parent>
+	<regex type="pcre2">^DHCP[A-Z]+\([^)]*\) (\d+\.\d+\.\d+\.\d+) </regex>
+	<order>srcip</order>
+</decoder>
+
+<decoder name="ubiquiti-dhcp">
+	<parent>ubiquiti-dhcp</parent>
+	<regex type="pcre2">^DHCP[A-Z]+\([^)]*\) (?:\S+ )?((?:[0-9A-Fa-f]{2}:){5}[0-9A-Fa-f]{2})\b</regex>
+	<order>unifi_client_mac</order>
+</decoder>
+
+<decoder name="ubiquiti-dhcp">
+	<parent>ubiquiti-dhcp</parent>
+	<regex type="pcre2">^DHCP[A-Z]+\([^)]*\) \S+ (?:[0-9A-Fa-f]{2}:){5}[0-9A-Fa-f]{2} (\S+)</regex>
+	<order>unifi_client_hostname</order>
+</decoder>
+
+<!--
+  ubiquiti-syslog: UniFi OS gateway daemons that report state and
+  provisioning, e.g. "GW-Name ubios-udapi-server[1626]: ...". Matched by
+  program name only; generic Linux daemons (dnsmasq, ulogd, earlyoom,
+  syslog-ng, systemd) are left to the stock ruleset.
+-->
+<decoder name="ubiquiti-syslog">
+	<program_name type="pcre2">^(?:ubios-udapi-server|mcad|mca-monitor|ubntconf|dpi-flow-stats|syswrapper|logguard|uplink-monitor|cfgmtd|wevent|stahtd)$</program_name>
+</decoder>
+
+<!--
+  ubiquiti-device: access point and switch syslog. These devices put their
+  MAC and model/firmware where the program name would be:
+    Nov 22 10:00:00 AP-Name 020000000001,U6-Mesh-8.8.14+20179: hostapd[5282]: ...
+  With a timestamp, the pre-decoder leaves "020000000001,U6-...: hostapd..."
+  as the message, and the stock symantec-av decoder (prematch: twelve word
+  characters and a comma) takes it first; that cannot be changed from a
+  custom decoder without breaking symantec-av for real Symantec logs, so
+  those lines are labelled by rule 100324 instead. Lines a switch sends
+  without a timestamp ("Switch-Name 020000000002,USW_FLEX_MINI-2.1.6: INF-DB: ...")
+  reach this decoder.
+-->
+<decoder name="ubiquiti-device">
+	<prematch type="pcre2">^(?:\S+ )?[0-9a-f]{12},[^:\s]+: </prematch>
+</decoder>
+
+<decoder name="ubiquiti-device">
+	<parent>ubiquiti-device</parent>
+	<regex type="pcre2">^(?:\S+ )?([0-9a-f]{12}),([^:\s]+): (?:([A-Za-z][\w.-]*)(?:\[\d+\])?: )?</regex>
+	<order>unifi_device_mac, unifi_device_firmware, unifi_device_process</order>
+</decoder>
