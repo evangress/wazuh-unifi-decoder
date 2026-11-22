@@ -145,6 +145,8 @@ Nov 22 10:44:00 GW-Name dnsmasq-dhcp[446231]: DHCPOFFER(br0) 192.0.2.47 02:00:00
 Nov 22 10:45:48 GW-Name ubios-udapi-server[1626]: svc-utm-service:                +(services):    Keep running service utm
 # expect: decoder=ubiquiti-syslog rule=100332 level=0
 Nov 22 10:45:49 GW-Name mcad[2201]: ace_reporter.reporter_save_config(): is_setup_completed: true
+# expect: decoder=ubiquiti-syslog rule=100332 level=0
+Nov 22 10:47:10 GW-Name ubnt-idsips-daemon[3310]: 2026-11-22T10:47:10.120-05:00	Info: Subscription is active: true
 # Access point debug output: MAC and model/firmware where the program name would be. The stock
 # symantec-av decoder takes these first; rule 100334 relabels them at level 0.
 # expect: decoder=symantec-av rule=100334 level=0

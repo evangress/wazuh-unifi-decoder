@@ -1100,7 +1100,7 @@
   syslog-ng, systemd) are left to the stock ruleset.
 -->
 <decoder name="ubiquiti-syslog">
-	<program_name type="pcre2">^(?:ubios-udapi-server|mcad|mca-monitor|ubntconf|dpi-flow-stats|syswrapper|logguard|uplink-monitor|cfgmtd|wevent|stahtd)$</program_name>
+	<program_name type="pcre2">^(?:ubios-udapi-server|ubnt-idsips-daemon|idsips_check_subscription|mcad|mca-monitor|ubntconf|dpi-flow-stats|syswrapper|logguard|uplink-monitor|cfgmtd|wevent|stahtd)$</program_name>
 </decoder>
 
 <!--
