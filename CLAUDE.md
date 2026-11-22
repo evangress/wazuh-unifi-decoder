@@ -59,6 +59,10 @@ This means "capture lazily until the next `key=` token or the end of the line." 
 
 - **Live UniFi output differs from the docs.** UniFi Network 10.x uses categories such as `Audit` and `Client Devices`, not only the documented `Monitoring`/`System`. It also sends keys that the documented list leaves out (`UNIFIsettings*`, `UNIFIutcTime`, `UNIFIwifi*`, `UNIFInetwork*`, `UNIFIusage*`, `UNIFIduration`). Treat real logs as the source of truth.
 
+## Device syslog decoders (not CEF)
+
+`ubiquiti-coredns`, `ubiquiti-dhcp`, `ubiquiti-syslog` and `ubiquiti-device` (end of the file) decode the plain syslog UniFi devices send. They have their own decoder names so they never join the `ubiquiti` CEF sibling chain (a prematch-less sibling there would take over). Verified with wazuh-logtest on 4.14.10: the gateway's doubled hostname header leaves `coredns` lines without a program name, and access-point lines (`<mac>,<model-firmware>: …`) are taken by the stock `symantec-av` decoder; adding a custom child to `symantec-av` breaks its own regex for real Symantec logs, so don't. Samples are in `samples/events.log` under "device syslog".
+
 ## Companion rules repo
 
 Alert rules live in `../wazuh-unifi-rules/ubiquiti_rules.xml`, with rule IDs 100010–100399. Every rule hangs off base rule `100010` (`<decoded_as>ubiquiti</decoded_as>`), so decoder field names (`event.name`, `unifi_category`, `unifi_sub-category`, …) are effectively an API for that repo. Renaming a field breaks rules there. Wazuh tries sibling rules from highest level to lowest, not in file order; on a tie, the earlier rule in the file wins. A rule that should *lower* the level of a broader match must be that rule's child. The CEF-severity fallbacks (100390–100392) are siblings of the specific rules. UniFi sends a fixed severity per event type, so give each specific rule a level at least equal to its severity's fallback level, and keep it above the fallbacks in the file. Otherwise the generic fallback wins.
