@@ -124,6 +124,75 @@
 	<order>user</order>
 </decoder>
 
+        <!-- Standard CEF network keys, first seen in UniFi Network 11.x firewall events.
+             dpt, dst, proto and spt are also decoded into the standard Wazuh fields
+             dstport, dstip, protocol and srcport (intentional duplicates). -->
+<decoder name="ubiquiti">
+	<parent>ubiquiti</parent>
+	<regex type="pcre2">\bact=(\S.*?)(?=\s+[A-Za-z][A-Za-z0-9_]*=|\s*$)</regex>
+	<order>act</order>
+</decoder>
+
+<decoder name="ubiquiti">
+	<parent>ubiquiti</parent>
+	<regex type="pcre2">\bapp=(\S.*?)(?=\s+[A-Za-z][A-Za-z0-9_]*=|\s*$)</regex>
+	<order>app</order>
+</decoder>
+
+<decoder name="ubiquiti">
+	<parent>ubiquiti</parent>
+	<regex type="pcre2">\bdeviceInboundInterface=(\S.*?)(?=\s+[A-Za-z][A-Za-z0-9_]*=|\s*$)</regex>
+	<order>device_inbound_interface</order>
+</decoder>
+
+<decoder name="ubiquiti">
+	<parent>ubiquiti</parent>
+	<regex type="pcre2">\bdpt=(\S.*?)(?=\s+[A-Za-z][A-Za-z0-9_]*=|\s*$)</regex>
+	<order>dpt</order>
+</decoder>
+
+<decoder name="ubiquiti">
+	<parent>ubiquiti</parent>
+	<regex type="pcre2">\bdpt=(\S.*?)(?=\s+[A-Za-z][A-Za-z0-9_]*=|\s*$)</regex>
+	<order>dstport</order>
+</decoder>
+
+<decoder name="ubiquiti">
+	<parent>ubiquiti</parent>
+	<regex type="pcre2">\bdst=(\S.*?)(?=\s+[A-Za-z][A-Za-z0-9_]*=|\s*$)</regex>
+	<order>dst</order>
+</decoder>
+
+<decoder name="ubiquiti">
+	<parent>ubiquiti</parent>
+	<regex type="pcre2">\bdst=(\S.*?)(?=\s+[A-Za-z][A-Za-z0-9_]*=|\s*$)</regex>
+	<order>dstip</order>
+</decoder>
+
+<decoder name="ubiquiti">
+	<parent>ubiquiti</parent>
+	<regex type="pcre2">\bproto=(\S.*?)(?=\s+[A-Za-z][A-Za-z0-9_]*=|\s*$)</regex>
+	<order>proto</order>
+</decoder>
+
+<decoder name="ubiquiti">
+	<parent>ubiquiti</parent>
+	<regex type="pcre2">\bproto=(\S.*?)(?=\s+[A-Za-z][A-Za-z0-9_]*=|\s*$)</regex>
+	<order>protocol</order>
+</decoder>
+
+<decoder name="ubiquiti">
+	<parent>ubiquiti</parent>
+	<regex type="pcre2">\bspt=(\S.*?)(?=\s+[A-Za-z][A-Za-z0-9_]*=|\s*$)</regex>
+	<order>spt</order>
+</decoder>
+
+<decoder name="ubiquiti">
+	<parent>ubiquiti</parent>
+	<regex type="pcre2">\bspt=(\S.*?)(?=\s+[A-Za-z][A-Za-z0-9_]*=|\s*$)</regex>
+	<order>srcport</order>
+</decoder>
+
         <!-- UNIFI namespace keys (deduplicated, snake_case outputs) -->
 <decoder name="ubiquiti">
 	<parent>ubiquiti</parent>
@@ -958,6 +1027,147 @@
 	<parent>ubiquiti</parent>
 	<regex type="pcre2">\bUNIFIwanSubnet=(\S.*?)(?=\s+[A-Za-z][A-Za-z0-9_]*=|\s*$)</regex>
 	<order>unifi_wan_subnet</order>
+</decoder>
+
+        <!-- Keys first seen in UniFi Network 11.x live logs: firewall (Blocked by Firewall),
+             VPN and Teleport client, and wired client events.
+             UNIFIsrcClientIp is also decoded into srcip (intentional duplicate). -->
+<decoder name="ubiquiti">
+	<parent>ubiquiti</parent>
+	<regex type="pcre2">\bUNIFIdirection=(\S.*?)(?=\s+[A-Za-z][A-Za-z0-9_]*=|\s*$)</regex>
+	<order>unifi_direction</order>
+</decoder>
+
+<decoder name="ubiquiti">
+	<parent>ubiquiti</parent>
+	<regex type="pcre2">\bUNIFIdstDomain=(\S.*?)(?=\s+[A-Za-z][A-Za-z0-9_]*=|\s*$)</regex>
+	<order>unifi_dst_domain</order>
+</decoder>
+
+<decoder name="ubiquiti">
+	<parent>ubiquiti</parent>
+	<regex type="pcre2">\bUNIFIdstRegion=(\S.*?)(?=\s+[A-Za-z][A-Za-z0-9_]*=|\s*$)</regex>
+	<order>unifi_dst_region</order>
+</decoder>
+
+<decoder name="ubiquiti">
+	<parent>ubiquiti</parent>
+	<regex type="pcre2">\bUNIFIdstZone=(\S.*?)(?=\s+[A-Za-z][A-Za-z0-9_]*=|\s*$)</regex>
+	<order>unifi_dst_zone</order>
+</decoder>
+
+<decoder name="ubiquiti">
+	<parent>ubiquiti</parent>
+	<regex type="pcre2">\bUNIFIfirewallPolicy=(\S.*?)(?=\s+[A-Za-z][A-Za-z0-9_]*=|\s*$)</regex>
+	<order>unifi_firewall_policy</order>
+</decoder>
+
+<decoder name="ubiquiti">
+	<parent>ubiquiti</parent>
+	<regex type="pcre2">\bUNIFIflowCount=(\S.*?)(?=\s+[A-Za-z][A-Za-z0-9_]*=|\s*$)</regex>
+	<order>unifi_flow_count</order>
+</decoder>
+
+<decoder name="ubiquiti">
+	<parent>ubiquiti</parent>
+	<regex type="pcre2">\bUNIFIflowId=(\S.*?)(?=\s+[A-Za-z][A-Za-z0-9_]*=|\s*$)</regex>
+	<order>unifi_flow_id</order>
+</decoder>
+
+<decoder name="ubiquiti">
+	<parent>ubiquiti</parent>
+	<regex type="pcre2">\bUNIFIlinkSpeed=(\S.*?)(?=\s+[A-Za-z][A-Za-z0-9_]*=|\s*$)</regex>
+	<order>unifi_link_speed</order>
+</decoder>
+
+<decoder name="ubiquiti">
+	<parent>ubiquiti</parent>
+	<regex type="pcre2">\bUNIFIpolicyName=(\S.*?)(?=\s+[A-Za-z][A-Za-z0-9_]*=|\s*$)</regex>
+	<order>unifi_policy_name</order>
+</decoder>
+
+<decoder name="ubiquiti">
+	<parent>ubiquiti</parent>
+	<regex type="pcre2">\bUNIFIpolicyType=(\S.*?)(?=\s+[A-Za-z][A-Za-z0-9_]*=|\s*$)</regex>
+	<order>unifi_policy_type</order>
+</decoder>
+
+<decoder name="ubiquiti">
+	<parent>ubiquiti</parent>
+	<regex type="pcre2">\bUNIFIsrcClientAlias=(\S.*?)(?=\s+[A-Za-z][A-Za-z0-9_]*=|\s*$)</regex>
+	<order>unifi_src_client_alias</order>
+</decoder>
+
+<decoder name="ubiquiti">
+	<parent>ubiquiti</parent>
+	<regex type="pcre2">\bUNIFIsrcClientHostname=(\S.*?)(?=\s+[A-Za-z][A-Za-z0-9_]*=|\s*$)</regex>
+	<order>unifi_src_client_hostname</order>
+</decoder>
+
+<decoder name="ubiquiti">
+	<parent>ubiquiti</parent>
+	<regex type="pcre2">\bUNIFIsrcClientIp=(\S.*?)(?=\s+[A-Za-z][A-Za-z0-9_]*=|\s*$)</regex>
+	<order>unifi_src_client_ip</order>
+</decoder>
+
+<decoder name="ubiquiti">
+	<parent>ubiquiti</parent>
+	<regex type="pcre2">\bUNIFIsrcClientIp=(\S.*?)(?=\s+[A-Za-z][A-Za-z0-9_]*=|\s*$)</regex>
+	<order>srcip</order>
+</decoder>
+
+<decoder name="ubiquiti">
+	<parent>ubiquiti</parent>
+	<regex type="pcre2">\bUNIFIsrcClientMac=(\S.*?)(?=\s+[A-Za-z][A-Za-z0-9_]*=|\s*$)</regex>
+	<order>unifi_src_client_mac</order>
+</decoder>
+
+<decoder name="ubiquiti">
+	<parent>ubiquiti</parent>
+	<regex type="pcre2">\bUNIFIsrcClientModel=(\S.*?)(?=\s+[A-Za-z][A-Za-z0-9_]*=|\s*$)</regex>
+	<order>unifi_src_client_model</order>
+</decoder>
+
+<decoder name="ubiquiti">
+	<parent>ubiquiti</parent>
+	<regex type="pcre2">\bUNIFIsrcZone=(\S.*?)(?=\s+[A-Za-z][A-Za-z0-9_]*=|\s*$)</regex>
+	<order>unifi_src_zone</order>
+</decoder>
+
+<decoder name="ubiquiti">
+	<parent>ubiquiti</parent>
+	<regex type="pcre2">\bUNIFItotalBytes=(\S.*?)(?=\s+[A-Za-z][A-Za-z0-9_]*=|\s*$)</regex>
+	<order>unifi_total_bytes</order>
+</decoder>
+
+<decoder name="ubiquiti">
+	<parent>ubiquiti</parent>
+	<regex type="pcre2">\bUNIFItotalPackets=(\S.*?)(?=\s+[A-Za-z][A-Za-z0-9_]*=|\s*$)</regex>
+	<order>unifi_total_packets</order>
+</decoder>
+
+<decoder name="ubiquiti">
+	<parent>ubiquiti</parent>
+	<regex type="pcre2">\bUNIFIvpnName=(\S.*?)(?=\s+[A-Za-z][A-Za-z0-9_]*=|\s*$)</regex>
+	<order>unifi_vpn_name</order>
+</decoder>
+
+<decoder name="ubiquiti">
+	<parent>ubiquiti</parent>
+	<regex type="pcre2">\bUNIFIvpnServerAddress=(\S.*?)(?=\s+[A-Za-z][A-Za-z0-9_]*=|\s*$)</regex>
+	<order>unifi_vpn_server_address</order>
+</decoder>
+
+<decoder name="ubiquiti">
+	<parent>ubiquiti</parent>
+	<regex type="pcre2">\bUNIFIvpnSubnet=(\S.*?)(?=\s+[A-Za-z][A-Za-z0-9_]*=|\s*$)</regex>
+	<order>unifi_vpn_subnet</order>
+</decoder>
+
+<decoder name="ubiquiti">
+	<parent>ubiquiti</parent>
+	<regex type="pcre2">\bUNIFIvpnType=(\S.*?)(?=\s+[A-Za-z][A-Za-z0-9_]*=|\s*$)</regex>
+	<order>unifi_vpn_type</order>
 </decoder>
 
 <!--
