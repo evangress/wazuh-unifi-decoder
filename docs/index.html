@@ -197,12 +197,15 @@ grep -E 'analysisd.*(ERROR|CRITICAL|WARNING)' /var/ossec/logs/ossec.log | tail</
       <tr><td>100104</td><td>Other security events</td><td class="lvl">7</td></tr>
       <tr><td>100312</td><td>Temporary internet disconnection</td><td class="lvl">7</td></tr>
       <tr><td>100200</td><td>Admin accessed UniFi Network</td><td class="lvl">5</td></tr>
+      <tr><td>100205</td><td>VPN or Teleport client connected</td><td class="lvl">5</td></tr>
       <tr><td>100201–100203</td><td>Config modified, created, removed</td><td class="lvl">5</td></tr>
       <tr><td>100313–100315</td><td>Internet restored, high latency, packet loss</td><td class="lvl">5</td></tr>
       <tr><td>100302 / 100303</td><td>Device firmware / UniFi application updated</td><td class="lvl">5</td></tr>
       <tr><td>100320 / 100321</td><td>Device adopted / ready for adoption</td><td class="lvl">5</td></tr>
       <tr><td>100103</td><td>Firewall events</td><td class="lvl">5</td></tr>
+      <tr><td>100107</td><td>Blocked by Firewall (UniFi Network 11.x, no sub-category)</td><td class="lvl">5</td></tr>
       <tr><td>100390–100392</td><td>Fallback by CEF severity (9–10, 7–8, 4–6)</td><td class="lvl">12 / 10 / 5</td></tr>
+      <tr><td>100206</td><td>VPN or Teleport client disconnected</td><td class="lvl">3</td></tr>
       <tr><td>100112</td><td>DNS: content-filter block</td><td class="lvl">3</td></tr>
       <tr><td>100010</td><td>Any other UniFi event, including client connect, disconnect and roam</td><td class="lvl">2</td></tr>
       <tr><td>100110 / 100111</td><td>DNS: any filtering event / ad domain blocked (device syslog)</td><td class="lvl">2</td></tr>
@@ -223,6 +226,8 @@ grep -E 'analysisd.*(ERROR|CRITICAL|WARNING)' /var/ossec/logs/ossec.log | tail</
       <tr><td><code>srcip</code>, <code>unifi_client_ip</code>, <code>unifi_client_mac</code>, <code>system_name</code></td><td>Client identity</td></tr>
       <tr><td><code>dstip</code>, <code>dstport</code>, <code>unifi_connected_to_device_name</code></td><td>The AP or switch a client is attached to</td></tr>
       <tr><td><code>unifi_admin</code>, <code>unifi_settings_section</code>, <code>unifi_settings_changes</code></td><td>Admin audit trail</td></tr>
+      <tr><td><code>srcip</code>, <code>unifi_src_client_alias</code>, <code>dstip</code>, <code>dstport</code>, <code>protocol</code>, <code>unifi_firewall_policy</code>, <code>unifi_src_zone</code>, <code>unifi_dst_zone</code>, <code>unifi_dst_domain</code></td><td>Firewall events (UniFi Network 11.x)</td></tr>
+      <tr><td><code>unifi_vpn_name</code>, <code>unifi_vpn_type</code>, <code>unifi_vpn_subnet</code>, <code>unifi_duration</code></td><td>VPN and Teleport sessions</td></tr>
       <tr><td><code>unifi_wan_id</code>, <code>unifi_wan_isp</code>, <code>unifi_wan_latency</code></td><td>WAN health</td></tr>
       <tr><td><code>unifi_wifi_name</code>, <code>unifi_wifi_rssi</code>, <code>unifi_bssid</code></td><td>Wireless details</td></tr>
       <tr><td><code>unifi_device_name</code>, <code>unifi_device_model</code>, <code>unifi_device_version</code></td><td>UniFi hardware</td></tr>
