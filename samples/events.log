@@ -178,6 +178,24 @@ Nov 22 10:47:10 GW-Name ubnt-idsips-daemon[3310]: 2026-11-22T10:47:10.120-05:00	
 Nov 22 10:46:52 AP-Name 020000000001,U6-Mesh-8.8.14+20179: hostapd[5282]: wifi0ap0: STA 02:00:00:00:00:0d WPA: UBNT_ROAM received: STA roamed to peer AP 02:00:00:00:00:0e
 # expect: decoder=symantec-av rule=100334 level=0
 Nov 22 10:46:54 AP-Name 020000000001,U6-Mesh-8.8.14+20179: kernel: wlan: [0:I:ANY] [UNSPECIFIED] vap-1(wifi0ap1): [02:00:00:00:00:0d]recv auth frame with algorithm 0 seq 1 rssi:58 minrssi:0
+# live: wrong Wi-Fi password, two failed attempts (4 handshake retries each). UniFi sends no
+# CEF event for this. Each line raises 100335; the 8th raises 100336 (frequency rule).
+# expect: decoder=symantec-av rule=100335 level=5
+Nov 28 13:44:50 AP-Name 020000000003,U6-Mesh-Pro-8.8.14+20179: hostapd[15676]: wifi1ap5: AP-STA-POSSIBLE-PSK-MISMATCH 02:00:00:00:00:31
+# expect: decoder=symantec-av rule=100335 level=5
+Nov 28 13:44:51 AP-Name 020000000003,U6-Mesh-Pro-8.8.14+20179: hostapd[15676]: wifi1ap5: AP-STA-POSSIBLE-PSK-MISMATCH 02:00:00:00:00:31
+# expect: decoder=symantec-av rule=100335 level=5
+Nov 28 13:44:52 AP-Name 020000000003,U6-Mesh-Pro-8.8.14+20179: hostapd[15676]: wifi1ap5: AP-STA-POSSIBLE-PSK-MISMATCH 02:00:00:00:00:31
+# expect: decoder=symantec-av rule=100335 level=5
+Nov 28 13:44:53 AP-Name 020000000003,U6-Mesh-Pro-8.8.14+20179: hostapd[15676]: wifi1ap5: AP-STA-POSSIBLE-PSK-MISMATCH 02:00:00:00:00:31
+# expect: decoder=symantec-av rule=100335 level=5
+Nov 28 13:45:05 AP-Name 020000000003,U6-Mesh-Pro-8.8.14+20179: hostapd[15676]: wifi1ap5: AP-STA-POSSIBLE-PSK-MISMATCH 02:00:00:00:00:31
+# expect: decoder=symantec-av rule=100335 level=5
+Nov 28 13:45:06 AP-Name 020000000003,U6-Mesh-Pro-8.8.14+20179: hostapd[15676]: wifi1ap5: AP-STA-POSSIBLE-PSK-MISMATCH 02:00:00:00:00:31
+# expect: decoder=symantec-av rule=100335 level=5
+Nov 28 13:45:07 AP-Name 020000000003,U6-Mesh-Pro-8.8.14+20179: hostapd[15676]: wifi1ap5: AP-STA-POSSIBLE-PSK-MISMATCH 02:00:00:00:00:31
+# expect: decoder=symantec-av rule=100336 level=8
+Nov 28 13:45:08 AP-Name 020000000003,U6-Mesh-Pro-8.8.14+20179: hostapd[15676]: wifi1ap5: AP-STA-POSSIBLE-PSK-MISMATCH 02:00:00:00:00:31
 # Switch output sent without a syslog timestamp.
 # expect: decoder=ubiquiti-device rule=100333 level=0 fields=unifi_device_mac,unifi_device_firmware,unifi_device_process
 Switch-Name 020000000002,USW_FLEX_MINI-2.1.6.762: INF-DB: Send normal inform to [http://192.0.2.30:8080/inform] aes_gcm 1 Time 6208529
