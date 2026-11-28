@@ -75,7 +75,7 @@ docker compose -f lab/docker-compose.yml up -d
 docker compose -f lab/docker-compose.yml down -v
 ```
 
-The lab can also receive live syslog from a UniFi controller; see [`lab/README.md`](lab/README.md).
+The lab can also receive live syslog from a UniFi controller; see [`lab/README.md`](lab/README.md). After a UniFi upgrade, `./test.py --scan-archives` lists any new CEF keys or event types in that live traffic that the decoder and rules don't handle yet.
 
 ## Contributing
 

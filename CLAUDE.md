@@ -12,7 +12,10 @@ A single Wazuh decoder file, `ubiquiti_decoders.xml`, that parses UniFi CEF sysl
 ./test.py              # restart Wazuh in the lab container, run every sample, check expectations
 ./test.py -v           # also list passing samples
 ./test.py --no-reload  # skip the ~10 s restart when nothing changed
+./test.py --scan-archives [--days N] [-v]  # report gaps in live traffic instead of running samples
 ```
+
+`--scan-archives` reads the lab manager's dated archive files (`logall_json`, last 7 days by default) and lists the UniFi versions seen, CEF keys with no decoder (`-v` prints an example line for each), event types with no sample, and event types that only reach base rule 100010. It exits 1 when there are undecoded keys or unsampled event types. Run it after every UniFi upgrade. The example lines contain real hostnames, MACs and IPs, so anonymize them before they go into `samples/events.log`.
 
 `test.py` needs the Docker lab described below. It feeds `samples/events.log` through `wazuh-logtest` and checks each line against the `# expect:` comment above it: decoder, rule ID, level, and required non-empty fields. It also fails if a sample contains a CEF key that has no decoder. When a new UniFi event type shows up, anonymize it (hostnames, client names, MACs, IPs), add it to `samples/events.log` with an expectation, and run the tests. Samples marked "synthetic" stand in for events not yet seen from a real controller.
 

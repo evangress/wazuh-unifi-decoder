@@ -29,6 +29,11 @@ After editing a decoder or rule, `./test.py` restarts Wazuh for you. To reload b
    ```
    Decoded fields and matched rules are in `logs/archives/archives.json`; alerts
    (level 3 and above) are in `logs/alerts/alerts.json`.
+
+   Once events have arrived for a while, `./test.py --scan-archives` summarizes them: UniFi
+   versions, CEF keys the decoder doesn't handle, event types with no sample, and event types
+   that no specific rule handles. Add `--days N` to read more history and `-v` for an
+   example line per undecoded key (real data, so anonymize it before adding it to the samples).
 3. If nothing arrives, check the host firewall. macOS's application firewall, especially
    in stealth mode, can drop incoming UDP for Docker. Allow Docker under
    **System Settings → Network → Firewall → Options**. To check whether packets reach the
