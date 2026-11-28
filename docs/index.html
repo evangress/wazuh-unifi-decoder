@@ -184,6 +184,7 @@ grep -E 'analysisd.*(ERROR|CRITICAL|WARNING)' /var/ossec/logs/ossec.log | tail</
     <tbody>
       <tr><td>100100</td><td>Intrusion attempt, high risk</td><td class="lvl">13</td></tr>
       <tr><td>100105</td><td>IPS: Threat Detected and Blocked</td><td class="lvl">12</td></tr>
+      <tr><td>100109</td><td>IPS: Threat Detected and Blocked, attack from a client inside the network (names the client, target and signature)</td><td class="lvl">12</td></tr>
       <tr><td>100310 / 100311</td><td>Internet down / multiple WAN disconnections</td><td class="lvl">12</td></tr>
       <tr><td>100305</td><td>Multiple devices offline</td><td class="lvl">12</td></tr>
       <tr><td>100101</td><td>Intrusion attempt</td><td class="lvl">10</td></tr>
@@ -228,6 +229,7 @@ grep -E 'analysisd.*(ERROR|CRITICAL|WARNING)' /var/ossec/logs/ossec.log | tail</
       <tr><td><code>dstip</code>, <code>dstport</code>, <code>unifi_connected_to_device_name</code></td><td>The AP or switch a client is attached to</td></tr>
       <tr><td><code>unifi_admin</code>, <code>unifi_settings_section</code>, <code>unifi_settings_changes</code></td><td>Admin audit trail</td></tr>
       <tr><td><code>srcip</code>, <code>unifi_src_client_alias</code>, <code>dstip</code>, <code>dstport</code>, <code>protocol</code>, <code>unifi_firewall_policy</code>, <code>unifi_src_zone</code>, <code>unifi_dst_zone</code>, <code>unifi_dst_domain</code></td><td>Firewall events (UniFi Network 11.x)</td></tr>
+      <tr><td><code>unifi_ips_signature</code>, <code>unifi_ips_signature_id</code>, <code>unifi_risk</code>, <code>unifi_bytes_sent</code>, <code>unifi_bytes_received</code></td><td>IPS detections (UniFi Network 11.x)</td></tr>
       <tr><td><code>unifi_vpn_name</code>, <code>unifi_vpn_type</code>, <code>unifi_vpn_subnet</code>, <code>unifi_duration</code></td><td>VPN and Teleport sessions</td></tr>
       <tr><td><code>unifi_wan_id</code>, <code>unifi_wan_isp</code>, <code>unifi_wan_latency</code></td><td>WAN health</td></tr>
       <tr><td><code>unifi_wifi_name</code>, <code>unifi_wifi_rssi</code>, <code>unifi_bssid</code></td><td>Wireless details</td></tr>
