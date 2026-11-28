@@ -1170,6 +1170,57 @@
 	<order>unifi_vpn_type</order>
 </decoder>
 
+        <!-- Keys first seen in UniFi Network 11.0.104 IDS/IPS events (Threat Detected and Blocked):
+             the Suricata signature and ID, the IPS session, flow start time and per-direction
+             byte and packet counters. -->
+<decoder name="ubiquiti">
+	<parent>ubiquiti</parent>
+	<regex type="pcre2">\bUNIFIbytesReceived=(\S.*?)(?=\s+[A-Za-z][A-Za-z0-9_]*=|\s*$)</regex>
+	<order>unifi_bytes_received</order>
+</decoder>
+
+<decoder name="ubiquiti">
+	<parent>ubiquiti</parent>
+	<regex type="pcre2">\bUNIFIbytesSent=(\S.*?)(?=\s+[A-Za-z][A-Za-z0-9_]*=|\s*$)</regex>
+	<order>unifi_bytes_sent</order>
+</decoder>
+
+<decoder name="ubiquiti">
+	<parent>ubiquiti</parent>
+	<regex type="pcre2">\bUNIFIflowStartTime=(\S.*?)(?=\s+[A-Za-z][A-Za-z0-9_]*=|\s*$)</regex>
+	<order>unifi_flow_start_time</order>
+</decoder>
+
+<decoder name="ubiquiti">
+	<parent>ubiquiti</parent>
+	<regex type="pcre2">\bUNIFIipsSessionId=(\S.*?)(?=\s+[A-Za-z][A-Za-z0-9_]*=|\s*$)</regex>
+	<order>unifi_ips_session_id</order>
+</decoder>
+
+<decoder name="ubiquiti">
+	<parent>ubiquiti</parent>
+	<regex type="pcre2">\bUNIFIipsSignature=(\S.*?)(?=\s+[A-Za-z][A-Za-z0-9_]*=|\s*$)</regex>
+	<order>unifi_ips_signature</order>
+</decoder>
+
+<decoder name="ubiquiti">
+	<parent>ubiquiti</parent>
+	<regex type="pcre2">\bUNIFIipsSignatureId=(\S.*?)(?=\s+[A-Za-z][A-Za-z0-9_]*=|\s*$)</regex>
+	<order>unifi_ips_signature_id</order>
+</decoder>
+
+<decoder name="ubiquiti">
+	<parent>ubiquiti</parent>
+	<regex type="pcre2">\bUNIFIpacketsReceived=(\S.*?)(?=\s+[A-Za-z][A-Za-z0-9_]*=|\s*$)</regex>
+	<order>unifi_packets_received</order>
+</decoder>
+
+<decoder name="ubiquiti">
+	<parent>ubiquiti</parent>
+	<regex type="pcre2">\bUNIFIpacketsSent=(\S.*?)(?=\s+[A-Za-z][A-Za-z0-9_]*=|\s*$)</regex>
+	<order>unifi_packets_sent</order>
+</decoder>
+
 <!--
   ======================================================================
   UniFi device syslog (not CEF): what gateways, access points and switches
